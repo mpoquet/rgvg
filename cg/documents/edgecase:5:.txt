@@ -1,0 +1,65 @@
+paradigm run interpreted
+paradigm arch any
+paradigm extension "hazel4"
+paradigm separator symbol op " " // separators need work
+//the. when the. she. when she. the
+paradigm separator instruction "\n"
+paradigm ignore whitespace
+
+symbol _ as comment(block) is ("#*","*#")
+symbol _ as comment(inline) is "#"
+
+value int as isize
+value bool as bool
+
+restrain(op) ((_*) -> int) is ((int*) -> int) 
+restrain(op) ((_*) -> bool) is ((bool*) -> bool)
+
+symbol par as container(inline<any,any>) is ("(",")") returns any
+symbol sqb as container is ("(",")") may-change-scope returns
+symbol add as op(infix) {$0 + $1} is "+" returns int
+symbol sub as op(infix(a,b)) {a - b} is "-" returns int
+symbol mul as op(infix) * is "*" returns int 
+symbol div as op(infix) / is "/" returns int
+group boolop:
+  implement std::arith::bool as bool //&&, || and ! operators
+group comp:
+  symbol _ as op(infix<any,any>) == returns bool
+  symbol _ as op(infix<any,any>) != returns bool
+  symbol _ as op(infix<any,any>) < returns bool
+  symbol _ as op(infix<any,any>) > returns bool
+end group
+
+symbol var as value(declare, name) is ("var", name) may-receive defaults int(0)
+symbol get as value(name) name is name returns any 
+symbol set as op(infix) { $0 = $1 } is "=" return _
+scope var local
+
+tag statement as set,var //not great solution imo
+tag expression as not #statement
+
+symbol _ as label(a: par<#expression->bool>, b: sqb) { 
+  a?
+  -> b
+  -> retry
+} is "while"
+symbol _ as label(a: par<#expression->bool>, b: sqb) { 
+  a? 
+  -> b
+  -> c
+} is "if"
+symbol func as value(declare, name) is "fn" receives 
+symbol _ as label(a: par<#statement>, b: sqb) { //note: scope
+  a
+  return b
+} is "" follows func returns
+symbol _ as 
+//still not a fan
+
+precedence par first //not a fan of precedence
+precedence mul after par
+precedence div after par
+precedence add after mul
+precedence sub after div
+precedence boolop.* after par
+precedence comp.* last

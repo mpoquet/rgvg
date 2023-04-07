@@ -1,0 +1,3 @@
+t[32mthe[39mt
+hi hehe hi
+t\033[32mthe\033[39mt
