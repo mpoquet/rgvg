@@ -1,10 +1,9 @@
-use std::collections::LinkedList;
 use std::process::{Command,Output,Stdio,Child};
 use std::{io, fs};
 use clap::Parser;
 
-mod command;
-
+mod input;
+mod output;
  
 
 ///Creates a command from a command string.
@@ -42,9 +41,9 @@ fn finish(last: Child) -> Result<Output, io::Error> {
 //NOTE: Search for command in PATH, try to find rust crate
 // Format stdout facile a lire avec grep
 
-use regex::Regex;
 
-use crate::command::framework::Convertible;
+use crate::input::framework::Convertible;
+use crate::input::tools::GREP;
 
 fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
     match cap {
@@ -74,12 +73,24 @@ fn main() {
             rc(&cap.name("t1")),
             rc(&cap.name("t2")));
     }*/
-    let args = command::Args::parse();
+    /*let text = r"./documents/t.txt:1:haha [01;31m[Kthe[m[K ha
+./documents/t.txt:2:elh[01;31m[Kthe[m[K:)
+";
+    output::read(output::GREP, text);
+    let text = r"[0m[35m./documents/t.txt[0m:[0m[32m1[0m:haha [0m[1m[31mthe[0m ha
+[0m[35m./documents/t.txt[0m:[0m[32m2[0m:elh[0m[1m[31mthe[0m:)
+";
+    output::read(output::RIPGREP, text);*/
+
+    
+    let args = input::Args::parse();
     //println!("{:?}", args);
-    let q = command::tools::GREP.clone().populate(args);
+    let mut g = input::tools::GREP.clone();
+    let q = g.populate(args);
     //println!("{:?}", q);
-    let p = command::tools::Grepper::generate(q);
-    println!("{:?}", p);
+    let p = g.generate(q);
+    //println!("{:?}", p);
     let r = finish(begin("grep".to_string(), p)).unwrap();
-    println!("{}", String::from_utf8(r.stdout).unwrap());
+    let result = output::read(output::GREP, &String::from_utf8(r.stdout).unwrap());
+    output::display(result);
 }

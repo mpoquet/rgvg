@@ -11,6 +11,8 @@ pub struct Grepper {
     file: Entry,
     /// Case sensitivity flag
     casei: Entry,
+    /// The default arguments. Do not use spaces within the args!
+    default_args: &'static str,
 }
 
 pub const GREP: Grepper = Grepper {
@@ -32,6 +34,7 @@ pub const GREP: Grepper = Grepper {
         target_name: Name::Short('i'),
         target_type: Argument::BooleanFlag(None),
     }*/
+    default_args:  "--color=always -Hnr",
 };
 
 impl Convertible<Args> for Grepper {
@@ -57,12 +60,13 @@ impl Convertible<Args> for Grepper {
 
         return r;
     }
-    fn generate(with: BTreeSet<Entry>) -> Vec<String> {
+    fn generate(&self, with: BTreeSet<Entry>) -> Vec<String> {
         let mut r: Vec<String> = Vec::new();
 
         for i in with {
             r.extend(i.transform());
         }
+        r.extend(self.default_args.split(" ").map(|c| c.to_string()).collect::<Vec<String>>());
         return r;
     }
 }

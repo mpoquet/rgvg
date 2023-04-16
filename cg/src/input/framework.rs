@@ -453,5 +453,5 @@ pub trait Convertible<T> {
     /// Polulate entry with clap data, returns the ordered entry bundle
     fn populate(&mut self, with: T) -> BTreeSet<Entry>;
     /// Takes clap data, and converts it to a command string.
-    fn generate(with: BTreeSet<Entry>) -> Vec<String>;
+    fn generate(&self, with: BTreeSet<Entry>) -> Vec<String>;
 }

@@ -1,0 +1,13 @@
+[1;35m./documents/times.txt[m[36m:[m[1;32m1[m[36m:[m[m[1;31mthe[m path to &&&& is great. [m
+[1;35m./documents/times.txt[m[36m:[m[1;32m2[m[36m:[m[m[1;31mthe[m path to &&&& must not be walked in shame. [m
+[1;35m./documents/times.txt[m[36m:[m[1;32m4[m[36m:[mi will walk [m[1;31mthe[m way of &&&&, and i will reach [m[1;31mthe[m holy city at [m[1;31mthe[m end of [m[1;31mthe[m road.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m6[m[36m:[mi will not fail not flinch, for [m[1;31mthe[m path to &&&& is one of glory and salvation.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m7[m[36m:[mi will remain strong with each new step, that i may walk [m[1;31mthe[m way of my fate.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m8[m[36m:[mi will reach [m[1;31mthe[m prophetized city at [m[1;31mthe[m end of [m[1;31mthe[m way to &&&&.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m9[m[36m:[mfor i know what weaknesses besets me, i will be ever-watchful of myself on [m[1;31mthe[m path to &&&&.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m10[m[36m:[m[m[1;31mthe[m road is treacherous, [m[1;31mthe[m road will try to stop me.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m11[m[36m:[mbut i will remember [m[1;31mthe[m shining city at [m[1;31mthe[m end.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m12[m[36m:[mfor each scratch, for each wound, for each soul that [m[1;31mthe[m road claims, i will remember of [m[1;31mthe[m golden walls and chiseled streets.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m13[m[36m:[mfor each doubt and each tear i will remind myself of [m[1;31mthe[m songs of crystal and cloth of sik.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m14[m[36m:[msuch is [m[1;31mthe[m way of &&&&, [m[1;31mthe[m one we must chase, if we are, to walk [m[1;31mthe[m path to [m[1;31mthe[m shining city at [m[1;31mthe[m end of [m[1;31mthe[m road.[m
+[1;35m./documents/times.txt[m[36m:[m[1;32m16[m[36m:[mthis is [m[1;31mthe[m way of &&&&.[m

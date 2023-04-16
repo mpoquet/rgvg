@@ -1,6 +1,5 @@
 pub mod framework;
 pub mod tools;
-pub mod read;
 
 use clap::{Parser, command};
 use std::path::PathBuf;
@@ -18,7 +17,9 @@ pub struct Args {
     #[arg(short='i')]
     casei: bool,
     /// Globs d'inclusion
+    #[arg(long)]
     include_files: Option<String>,
     /// Globs d'exclusion
+    #[arg(long)]
     exclude_files: Option<String>,
 }
