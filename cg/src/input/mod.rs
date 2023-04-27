@@ -18,8 +18,16 @@ pub struct Args {
     casei: bool,
     /// Globs d'inclusion
     #[arg(long)]
-    include_files: Option<String>,
+    include_files: Vec<String>,
     /// Globs d'exclusion
     #[arg(long)]
-    exclude_files: Option<String>,
+    exclude_files: Vec<String>,
+    /// Globs d'inclusion
+    #[arg(long)]
+    include_dir: Vec<String>,
+    /// Globs d'exclusion
+    #[arg(long)]
+    exclude_dir: Vec<String>,
 }
+
+pub type Cmd = (&'static str, Vec<String>);

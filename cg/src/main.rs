@@ -1,3 +1,4 @@
+use std::fs::write;
 use std::process::{Command,Output,Stdio,Child};
 use std::{io, fs};
 use clap::Parser;
@@ -38,12 +39,16 @@ fn finish(last: Child) -> Result<Output, io::Error> {
     return last.wait_with_output();
 }
 
+/// The full call
+fn call(command: input::Cmd) -> Result<Output, io::Error> {
+    finish(begin(command.0.to_string(), command.1))
+}
+
 //NOTE: Search for command in PATH, try to find rust crate
 // Format stdout facile a lire avec grep
 
 
 use crate::input::framework::Convertible;
-use crate::input::tools::GREP;
 
 fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
     match cap {
@@ -85,12 +90,12 @@ fn main() {
     
     let args = input::Args::parse();
     //println!("{:?}", args);
-    let mut g = input::tools::GREP.clone();
+    let mut g = input::tools::RIPGREP.clone();
     let q = g.populate(args);
     //println!("{:?}", q);
     let p = g.generate(q);
-    //println!("{:?}", p);
-    let r = finish(begin("grep".to_string(), p)).unwrap();
-    let result = output::read(output::GREP, &String::from_utf8(r.stdout).unwrap());
+    println!("{:?}", p);
+    let r = call(p).unwrap();
+    let result = output::read(output::RIPGREP, &String::from_utf8(r.stdout).unwrap());
     output::display(result);
 }

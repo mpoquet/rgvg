@@ -4,9 +4,9 @@ use regex::Regex;
 
 type Item = (usize,&'static str,&'static str);
 
-//rg 'the' ./documents --color=always --line-number -H 
-//grep 'the' ./documents --color=always -Hn -r
-//ugrep "the" ./documents -rn --color=always
+//rg the ./documents --color=always --line-number -H --no-heading
+//ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
+//ugrep the ./documents -rn --color=always
 
 
 pub struct OutputFormat {
