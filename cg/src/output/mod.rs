@@ -8,9 +8,8 @@ type Item = (usize,&'static str,&'static str);
 //ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
 //ugrep the ./documents -rn --color=always
 
-const NAME_LEN: usize = 512;
-const MATCH_LEN: usize = 64;
-const UTF_BYTES: usize = 4;
+const NAME_LEN: usize = 16;
+const MATCH_LEN: usize = 16;
 
 pub struct OutputFormat {
     /// The filename. Obviously mandatory.
@@ -24,94 +23,49 @@ pub struct OutputFormat {
     //// True if the matched STRING is highlighted. If false, finding the column (of the first matched string) will require running a regex search.
     // is_match_highlighted: bool,
 }
-trait Bleed {
 
-}
-#[derive(Debug)]
-pub struct Overflowable<T: Clone>(Vec<T>,usize);
-impl<T: Clone> Overflowable<T> {
-    fn new(value: &[T], max: usize) -> Self {
-        return Overflowable(value[0..std::cmp::min(value.len(),max)].to_vec(), max);
-    }
-}
-impl<T: Clone> Display for Overflowable<T> where String: FromIterator<T> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self.1 == self.0.len() {
-            true => write!(f, "{}\x1b[1m\x1b[31m◀︎\x1b[0m", String::from_iter(self.0.clone())),
-            false => write!(f, "{}", String::from_iter(self.0.clone())),
-        }
-    }
-}
-// impl From<Overflowable<char>> for Vec<u8> {
-//     fn from(value: Overflowable<char>) -> Self {
-//         let mut buffer = [0_u8; 4];
-//         let mut bytes = vec![];
-//         for c in value.0 {
-//             bytes.extend(c.encode_utf8(&mut buffer).as_bytes());
-//         }
-//     }
-// }
-impl<T: Clone> From<Overflowable<T>> for Vec<u8> where Vec<u8>: FromIterator<T> {
-    fn from(value: Overflowable<T>) -> Self {
-        let c = value.0.len();
-        let mut r = Vec::from_iter(value.0);
-        r.extend(std::iter::repeat(b'0').take(value.1 - c));
-        return r;
-    }
-}
-
-
-/// Big rust L incoming
-struct Thin<T>(T);
-struct Thinter<T>(isize,Vec<T>);
-impl<T> Iterator for Thinter<T> {
-    type Item = T;
-    fn next(&mut self) -> Option<Self::Item> {
-        self.0+=1;
-        match self.1.get(self.0 as usize) {
-            None => None,
-            Some(x) => Some(*x.to_owned()),
-        }
-    }
-}
-impl FromIterator<Thin<char>> for Vec<u8>  {
-    fn from_iter<T: IntoIterator<Item = Thin<char>>>(iter: T) -> Self {
-        let mut r = Vec::new();
-        for c in iter {
-            r.extend_from_slice(&u32::from(c.0).to_be_bytes());
-        }
-        return r;
-    }
-}
-impl<V> FromIterator<V> for Thinter<Thin<V>> {
-    fn from_iter<T: IntoIterator<Item = V>>(iter: T) -> Self {
-        let mut r = vec![];
-        for v in iter {
-            r.push(Thin(v));
-        }
-        return Thinter(-1, r);
-    }
-}
-
-impl From<Match> for Vec<u8> {
-    fn from(value: Match) -> Self {
+impl From<&Match> for Vec<u8> {
+    fn from(value: &Match) -> Self {
         let mut r: Vec<u8> = value.id.to_be_bytes().to_vec();
-        r.extend(Vec::from(value.filename));
+        r.extend(Vec::from(value.filename.0.clone()));
         r.extend(value.line.to_be_bytes().into_iter());
-        //r.extend(value.matched.into());
+        r.extend(Vec::from(value.matched.0.clone()));
         return r;
     }
 }
 #[derive(Debug)]
 pub struct Match {
     id: usize,
-    filename: Overflowable<char>,
+    filename: (String, bool),
     line: usize,
-    matched: Overflowable<char>,
+    matched: (String, bool),
 }
 impl Display for Match {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "\x1b[31m{}\x1b[39m \x1b[35m{} \x1b[34m{} \x1b[32m{}\x1b[0m", self.id, self.filename, self.line, self.matched)
+        fn disp_flag(b: bool) -> &'static str {
+            match b {
+                false => "",
+                true => "\x1b[1m\x1b[31m🆇\x1b[39m\x1b[0m",
+            }
+        }
+        write!(f, "\x1b[31m{}\x1b[39m \x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.id, self.filename.0, disp_flag(self.filename.1), self.line, self.matched.0, disp_flag(self.matched.1))
+    }
+}
+trait Restrict<T> {
+    fn restrict(source: T, max: usize) -> Self;
+}
+impl Restrict<&str> for String {
+    fn restrict(source: &str, max: usize) -> Self {
+        let top = std::cmp::min(max, source.len());
+
+        let mut j = top;
+        while j > 0 && !source.is_char_boundary(j) {
+            j-=1;
+        }
+        let result = source[..j].to_string();
+        // Pad the end to make sure it's the exact size.
+        let result = result + &String::from_iter(std::iter::repeat('\x00').take(max - j)); 
+        return result;
     }
 }
 
@@ -137,20 +91,19 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
     let mut matches = Vec::new();
 
     for m in r.captures_iter(text) {
-        let rf =  strip(m.name("f").unwrap().as_str());
-        let rf: Vec<char> = rf.chars().collect(); //Collect by UFVs
-        
+        let file_string = strip(m.name("f").unwrap().as_str());
+        let max_flag_f = NAME_LEN < file_string.len();   
 
         let lf = strip(m.name("l").unwrap().as_str());
 
         let mf = strip(m.name("m").unwrap().as_str());
-        let mf: Vec<char> = mf.chars().collect();
+        let max_flag_m = NAME_LEN < mf.len();
 
         matches.push(Match {
             id: matches.len(),
-            filename: Overflowable::new(&rf, NAME_LEN),
+            filename: (String::restrict(&file_string, NAME_LEN), max_flag_f),
             line: lf.parse().expect("Unreadable line numbers"),
-            matched: Overflowable::new(&mf, MATCH_LEN),
+            matched: (String::restrict(&mf, MATCH_LEN), max_flag_m),
         });
         //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
     }
@@ -181,6 +134,9 @@ pub fn display(result: &Vec<Match>) {
     }
 }
 
-pub fn write(result: Vec<Match>) {
-     let f = std::fs::write::<std::path::PathBuf,Vec<u8>>(std::env::home_dir().expect("Could not find home dir."), result.iter().into().join(b"\n"));
+pub fn write(result: &Vec<Match>) {
+    let s: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
+    let s = s.join(&b'\n');
+    let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
+    std::fs::write::<std::path::PathBuf,Vec<u8>>(h, s);
 }

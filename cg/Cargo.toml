@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 clap = { version = "4.1.11", features = ["derive"] }
+home = "0.5.5"
 regex = "1.7.3"
 #command-call = { version = "0.1.0", path = "../command-call" }
