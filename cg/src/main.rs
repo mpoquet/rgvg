@@ -97,5 +97,5 @@ fn main() {
     println!("{:?}", p);
     let r = call(p).unwrap();
     let result = output::read(output::RIPGREP, &String::from_utf8(r.stdout).unwrap());
-    output::display(result);
+    output::display(&result);
 }
