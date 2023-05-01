@@ -50,7 +50,7 @@ pub enum DefaultValue {
     Mandatory, 
     /// Just forgedaboutit
     Skip,
-    /// provide a default. This default is constant! may provide a formatter later lol
+    /// provide a default.
     Default(Argument),
 }
 #[derive(Clone, Debug)]
@@ -129,7 +129,11 @@ impl Name {
             Name::Blank(_) => return,
             Name::Undefined => return,
             _ => for c in arglist {
-                *c = self.to_string() + "=" + c;
+                if c.len() > 0 {
+                    *c = self.to_string() + "=" + c;
+                } else {
+                    *c = self.to_string() + c;
+                }
             }
         }
     }
@@ -240,11 +244,12 @@ impl Transform<Vec<Entry>> for Vec<String> {
     fn transform(&mut self, value: &Vec<Entry>) {
         let mut c = vec![];
         for i in value {
-            c.extend(i.clone().generate());
+            let mut e = i.clone().generate();
+            e.transform(&i.format.1);
+            i.target_name.name(&mut e);
+            c.extend(e);
         }
         // We assume formatters as identical for a same flag!
-        println!("{:?} {:?}",c, &value.get(0).unwrap());
-        c.transform(&value.get(0).unwrap_or(&Entry::ignore()).format.1);
         self.extend(c);
     }
 }
@@ -252,42 +257,33 @@ impl Transform<Vec<Entry>> for Vec<String> {
 
 impl Generate for Entry {
     fn generate(self) -> Vec<String> {
-        let name = &self.target_name;
         let defaults = &self.defaults_to.clone().into();
         match self.target_type {
             Argument::BooleanFlag(x) => match x {
                 None => vec![], //Should not occur
-                Some(true) => { 
-                    let mut r = vec!["".to_string()];
-                    name.name(&mut r);
-                    return r;
-                },
+                Some(true) => vec!["".to_string()],
                 Some(false) => vec![],
             },
-            Argument::Text(x) => optional_vectorization(x, name, defaults),
-            Argument::PathPattern(x) => optional_vectorization(x, name, defaults),
-            Argument::Empty(x) => optional_vectorization(x, name, defaults),
-            Argument::CollectionText(x) => optional_vectorization(x, name, defaults),
-            Argument::Number(x)  => optional_vectorization(x, name, defaults),
+            Argument::Text(x) => optional_vectorization(x, defaults),
+            Argument::PathPattern(x) => optional_vectorization(x, defaults),
+            Argument::Empty(x) => optional_vectorization(x, defaults),
+            Argument::CollectionText(x) => optional_vectorization(x, defaults),
+            Argument::Number(x)  => optional_vectorization(x, defaults),
             _ => panic!("Unsupported type: {:?}", self),
         }
     }
 }
 
-fn optional_vectorization<T: Vectorize>(v: Option<T>, name: &Name, defaults: &Argument) -> Vec<String> {
+fn optional_vectorization<T: Vectorize>(v: Option<T>, defaults: &Argument) -> Vec<String> {
     match v {
-        Some(n) => {
-            let mut r = n.vec();
-            name.name(&mut r);
-            return r;
-        },
+        Some(n) => n.vec(),
         None => match defaults {
             Argument::Empty(Some(())) => Vec::new(), //Skipped
-            Argument::Empty(None) => panic!("Mandatory argument {} was not provided", name),
+            Argument::Empty(None) => panic!("Mandatory argument was not provided"),
             _ => Entry {
                 defaults_to: DefaultValue::Mandatory,
                 format: (Formatter::Default, Formatter::Default),
-                target_name: name.clone(),
+                target_name: Name::Undefined, //Irrelevant
                 target_type: defaults.clone(),
             }.generate(),
         },

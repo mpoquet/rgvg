@@ -8,8 +8,8 @@ type Item = (usize,&'static str,&'static str);
 //ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
 //ugrep the ./documents -rn --color=always
 
-const NAME_LEN: usize = 16;
-const MATCH_LEN: usize = 16;
+const NAME_LEN: usize = 512;
+const MATCH_LEN: usize = 512;
 
 pub struct OutputFormat {
     /// The filename. Obviously mandatory.
@@ -132,8 +132,13 @@ pub fn display(result: &Vec<Match>) {
 }
 
 pub fn write(result: &Vec<Match>) {
-    let s: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
-    let s = s.concat();
+    let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
+    let v = v.concat();
+    let mut s: Vec<u8> = Vec::new();
+    s.extend(NAME_LEN.to_be_bytes());
+    s.extend(MATCH_LEN.to_be_bytes());
+
+    s.extend(v);
     let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
     std::fs::write::<std::path::PathBuf,Vec<u8>>(h, s);
 }
