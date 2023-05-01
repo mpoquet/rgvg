@@ -36,12 +36,12 @@ pub const GREP: Grepper = Grepper {
         target_name: Name::Blank(1),
         target_type: Argument::PathPattern(None),
     },
-    casei: Entry::ignore(),/*{
+    casei: Entry {
         defaults_to: DefaultValue::Skip,
-        source: SourceFormatter::Default,
+        format: (Formatter::Default, Formatter::Default),
         target_name: Name::Short('i'),
         target_type: Argument::BooleanFlag(None),
-    }*/
+    }, 
     include_files: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
@@ -82,15 +82,15 @@ pub const RIPGREP: Grepper = Grepper {
         target_name: Name::Blank(1),
         target_type: Argument::PathPattern(None),
     },
-    casei: Entry::ignore(),/*{
-        defaults_to: DefaultValue::Skip,
-        source: SourceFormatter::Default,
-        target_name: Name::Short('i'),
-        target_type: Argument::BooleanFlag(None),
-    }*/
-    include_files: Entry {
+    casei: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
+        target_name: Name::Short('i'),
+        target_type: Argument::BooleanFlag(None),
+    }, 
+    include_files: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Prefix("")),
         target_name: Name::Short('g'),
         target_type: Argument::CollectionText(None),
     },
@@ -102,7 +102,7 @@ pub const RIPGREP: Grepper = Grepper {
     },
     include_dir: Entry {
         defaults_to: DefaultValue::Skip,
-        format: (Formatter::Default, Formatter::Default),
+        format: (Formatter::Default, Formatter::Prefix("")),
         target_name: Name::Short('g'),
         target_type: Argument::CollectionText(None),
     },

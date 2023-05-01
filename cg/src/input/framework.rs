@@ -32,6 +32,8 @@ pub enum Argument {
     Text(Option<String>),
     /// Either there or not.. What do the stars say, my dear pippin, what do they say? - That we fight the good cause, merry. That we will see each other in the end.
     BooleanFlag(Option<bool>),
+    /// A numeric value
+    Number(Option<isize>),
     /// Nothing
     Empty(Option<()>),
 }
@@ -39,10 +41,6 @@ pub enum Argument {
 pub enum Formatter {
     /// [in,out] No formatting
     Default,
-    /// [in] Filter in only certain elements, placeholder for now
-    Filter,
-    /// [out] Join elements
-    Join,
     /// [in,out] A prefix, 
     Prefix(&'static str)
 }
@@ -76,7 +74,7 @@ pub trait Generate {
     fn generate(self) -> Vec<String>;
 }
 trait Vectorize : Sized {
-    fn vec(self, name: &Name) -> Vec<String>; //
+    fn vec(self) -> Vec<String>; //
 }
 pub trait Transformable<U> {
     /// Takes an empty entry and fills it.
@@ -125,7 +123,15 @@ impl Name {
             Name::LongC(s) => { *self = Name::Long(s.to_string()) },
             _ => return,
         };
-
+    }
+    fn name(&self, arglist: &mut Vec<String>) {
+        match self {
+            Name::Blank(_) => return,
+            Name::Undefined => return,
+            _ => for c in arglist {
+                *c = self.to_string() + "=" + c;
+            }
+        }
     }
 }
 
@@ -225,7 +231,6 @@ impl Transform<Formatter> for Vec<String> {
     fn transform(&mut self, value: &Formatter) {
         match value {
             Formatter::Default => return, // No change, this line is the same everywhere.
-            Formatter::Join => todo!(),
             Formatter::Prefix(s) => { *self = self.iter().map(|c| s.to_string() + c).collect() }
             _ => panic!("Unsupported formatter for destination type Vec<String>."),
         }
@@ -237,7 +242,8 @@ impl Transform<Vec<Entry>> for Vec<String> {
         for i in value {
             c.extend(i.clone().generate());
         }
-        // We assume formatters as identical!
+        // We assume formatters as identical for a same flag!
+        println!("{:?} {:?}",c, &value.get(0).unwrap());
         c.transform(&value.get(0).unwrap_or(&Entry::ignore()).format.1);
         self.extend(c);
     }
@@ -246,12 +252,23 @@ impl Transform<Vec<Entry>> for Vec<String> {
 
 impl Generate for Entry {
     fn generate(self) -> Vec<String> {
+        let name = &self.target_name;
+        let defaults = &self.defaults_to.clone().into();
         match self.target_type {
-            Argument::BooleanFlag(x) => optional_vectorization(x, &self.target_name, &self.defaults_to.into()),
-            Argument::Text(x) => optional_vectorization(x, &self.target_name, &self.defaults_to.into()),
-            Argument::PathPattern(x) => optional_vectorization(x, &self.target_name, &self.defaults_to.into()),
-            Argument::Empty(x) => optional_vectorization(x, &self.target_name, &self.defaults_to.into()),
-            Argument::CollectionText(x) => optional_vectorization(x, &self.target_name, &self.defaults_to.into()),
+            Argument::BooleanFlag(x) => match x {
+                None => vec![], //Should not occur
+                Some(true) => { 
+                    let mut r = vec!["".to_string()];
+                    name.name(&mut r);
+                    return r;
+                },
+                Some(false) => vec![],
+            },
+            Argument::Text(x) => optional_vectorization(x, name, defaults),
+            Argument::PathPattern(x) => optional_vectorization(x, name, defaults),
+            Argument::Empty(x) => optional_vectorization(x, name, defaults),
+            Argument::CollectionText(x) => optional_vectorization(x, name, defaults),
+            Argument::Number(x)  => optional_vectorization(x, name, defaults),
             _ => panic!("Unsupported type: {:?}", self),
         }
     }
@@ -259,7 +276,11 @@ impl Generate for Entry {
 
 fn optional_vectorization<T: Vectorize>(v: Option<T>, name: &Name, defaults: &Argument) -> Vec<String> {
     match v {
-        Some(n) => n.vec(name),
+        Some(n) => {
+            let mut r = n.vec();
+            name.name(&mut r);
+            return r;
+        },
         None => match defaults {
             Argument::Empty(Some(())) => Vec::new(), //Skipped
             Argument::Empty(None) => panic!("Mandatory argument {} was not provided", name),
@@ -274,43 +295,32 @@ fn optional_vectorization<T: Vectorize>(v: Option<T>, name: &Name, defaults: &Ar
 }
 impl<T> Vectorize for Vec<T> 
     where T: Vectorize {
-        fn vec(self, name: &Name) -> Vec<String> { //, name: Name, defaults: DefaultValue
+        fn vec(self) -> Vec<String> { //, name: Name, defaults: DefaultValue
             let mut r: Vec<String> = Vec::new();
             for c in self {
-                r.extend(c.vec(name));
+                r.extend(c.vec());
             }
             return r;
         }
     }
 
 impl Vectorize for String {
-    fn vec(self, name: &Name) -> Vec<String> {
-        match name {
-            Name::Short(_) => vec![name.to_string() + "=" + &self + ""],
-            Name::Long(_) => vec![name.to_string() + "=" + &self + ""],
-            _ => vec![self],
-        }
-    }
-}
-impl Vectorize for bool {
-    fn vec(self, name: &Name) -> Vec<String> {
-        let n = name.to_string();
-        if n == "" { //Named as a positional argument, which is, bad!
-            panic!("Boolean type was used for positional argument, impossible to generate.");
-        }
-        match self {
-            true => vec![n],
-            false => vec![],
-        }
+    fn vec(self) -> Vec<String> {
+        vec![self]
     }
 }
 impl Vectorize for PathBuf {
-    fn vec(self, name: &Name) -> Vec<String> {
+    fn vec(self) -> Vec<String> {
         return vec![self.display().to_string()];
     }
 }
+impl Vectorize for isize {
+    fn vec(self) -> Vec<String> {
+        return Vec::new();
+    }
+}
 impl Vectorize for () {
-    fn vec(self, _name: &Name) -> Vec<String> {
+    fn vec(self) -> Vec<String> {
         return vec![];
     }
 }
@@ -534,6 +544,14 @@ impl Entry {
             format: (Formatter::Default, Formatter::Default),
             target_name: Name::Undefined,
             target_type: Argument::Empty(None),
+        };
+    }
+    pub const fn bool(name: Name) -> Self {
+        return Entry {
+            defaults_to: DefaultValue::Skip,
+            format: (Formatter::Default, Formatter::Default),
+            target_name: name,
+            target_type: Argument::BooleanFlag(None),
         };
     }
 }

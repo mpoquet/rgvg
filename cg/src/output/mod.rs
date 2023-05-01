@@ -26,8 +26,7 @@ pub struct OutputFormat {
 
 impl From<&Match> for Vec<u8> {
     fn from(value: &Match) -> Self {
-        let mut r: Vec<u8> = value.id.to_be_bytes().to_vec();
-        r.extend(Vec::from(value.filename.0.clone()));
+        let mut r: Vec<u8> = Vec::from(value.filename.0.clone());
         r.extend(value.line.to_be_bytes().into_iter());
         r.extend(Vec::from(value.matched.0.clone()));
         return r;
@@ -35,7 +34,6 @@ impl From<&Match> for Vec<u8> {
 }
 #[derive(Debug)]
 pub struct Match {
-    id: usize,
     filename: (String, bool),
     line: usize,
     matched: (String, bool),
@@ -48,7 +46,7 @@ impl Display for Match {
                 true => "\x1b[1m\x1b[31m🆇\x1b[39m\x1b[0m",
             }
         }
-        write!(f, "\x1b[31m{}\x1b[39m \x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.id, self.filename.0, disp_flag(self.filename.1), self.line, self.matched.0, disp_flag(self.matched.1))
+        write!(f, "\x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.filename.0, disp_flag(self.filename.1), self.line, self.matched.0, disp_flag(self.matched.1))
     }
 }
 trait Restrict<T> {
@@ -100,7 +98,6 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
         let max_flag_m = NAME_LEN < mf.len();
 
         matches.push(Match {
-            id: matches.len(),
             filename: (String::restrict(&file_string, NAME_LEN), max_flag_f),
             line: lf.parse().expect("Unreadable line numbers"),
             matched: (String::restrict(&mf, MATCH_LEN), max_flag_m),
@@ -126,8 +123,8 @@ pub fn display(result: &Vec<Match>) {
     let mut i = 0;
     for m in result {
         match i%2 {
-            0 => println!("{}", m),
-            1 => println!("\x1b[1m{}\x1b[0m", m),
+            0 => println!("\x1b[31m{}\x1b[39m {}", i, m),
+            1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, m),
             _ => panic!("CPU borken :("),
         };
         i+=1;
@@ -136,7 +133,7 @@ pub fn display(result: &Vec<Match>) {
 
 pub fn write(result: &Vec<Match>) {
     let s: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
-    let s = s.join(&b'\n');
+    let s = s.concat();
     let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
     std::fs::write::<std::path::PathBuf,Vec<u8>>(h, s);
 }
