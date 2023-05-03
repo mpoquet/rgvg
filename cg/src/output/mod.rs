@@ -113,11 +113,27 @@ pub const GREP: OutputFormat = OutputFormat {
     line: (1, ":", ":"),
     matched: (2, "", "\n"),
 };
+
 pub const RIPGREP: OutputFormat = OutputFormat {
     filename: (0, r"\[0m\[35m", r"\[0m"),
     line: (1, r":\[0m\[32m", r"\[0m:"),
     matched: (2, "", "\n"),
 };
+
+pub const UGREP: OutputFormat = OutputFormat {
+    filename: (0, r"[1;35m", r"[m[36m"),
+    line: (1, r":[m[1;32m", r"[m[36m:"),
+    matched: (2, "[m", "\n"),
+};
+
+pub fn picker(tool: &str) -> OutputFormat {
+    match tool {
+        "grep" => self::GREP,
+        "ripgrep" => self::RIPGREP,
+        "ugrep" => self::UGREP,
+        _ => panic!("Unkown tool requested"),
+    }
+}
 
 pub fn display(result: &Vec<Match>) {
     let mut i = 0;
@@ -140,5 +156,5 @@ pub fn write(result: &Vec<Match>) {
 
     s.extend(v);
     let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
-    std::fs::write::<std::path::PathBuf,Vec<u8>>(h, s);
+    std::fs::write(h, s);
 }

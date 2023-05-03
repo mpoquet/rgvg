@@ -64,6 +64,7 @@ pub const GREP: Grepper = Grepper {
     default_args:  "--color=always -Hnr",
     command: "grep",
 };
+
 pub const RIPGREP: Grepper = Grepper {
     regex_pattern: Entry { 
         defaults_to: DefaultValue::Mandatory,
@@ -105,6 +106,57 @@ pub const RIPGREP: Grepper = Grepper {
     default_args:  "--color=always -Hn --no-heading",
     command: "rg",
 };
+
+pub const UGREP: Grepper = Grepper {
+    regex_pattern: Entry { 
+        defaults_to: DefaultValue::Mandatory,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::Blank(0),
+        target_type: Argument::Text(None),
+    },
+    file: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::Blank(1),
+        target_type: Argument::PathPattern(None),
+    },
+    casei: Entry::bool(Name::Short('i')), 
+    include_files: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::LongC("include"),
+        target_type: Argument::CollectionText(None),
+    },
+    exclude_files: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::LongC("exclude"),
+        target_type: Argument::CollectionText(None),
+    },
+    include_dir: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::LongC("include-dir"),
+        target_type: Argument::CollectionText(None),
+    },
+    exclude_dir: Entry {
+        defaults_to: DefaultValue::Skip,
+        format: (Formatter::Default, Formatter::Default),
+        target_name: Name::LongC("exclude-dir"),
+        target_type: Argument::CollectionText(None),
+    },
+    default_args:  "-rn --color=always",
+    command: "ugrep",
+};
+
+pub fn picker(tool: &str) -> Grepper {
+    match tool {
+        "grep" => self::GREP,
+        "ripgrep" => self::RIPGREP,
+        "ugrep" => self::UGREP,
+        _ => panic!("Unkown tool requested"),
+    }
+}
 
 impl Convertible<Args> for Grepper {
     /// Yipeee ^-^
