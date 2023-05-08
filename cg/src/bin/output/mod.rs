@@ -27,16 +27,18 @@ pub struct OutputFormat {
 impl From<&Match> for Vec<u8> {
     fn from(value: &Match) -> Self {
         let mut r: Vec<u8> = Vec::from(value.filename.0.clone());
+        r.extend(std::iter::repeat(0).take(value.filename.1 - value.filename.0.len()));
         r.extend(value.line.to_be_bytes().into_iter());
         r.extend(Vec::from(value.matched.0.clone()));
+        r.extend(std::iter::repeat(0).take(value.matched.1 - value.matched.0.len()));
         return r;
     }
 }
 #[derive(Debug)]
 pub struct Match {
-    filename: (String, bool),
+    filename: (String, usize),
     line: usize,
-    matched: (String, bool),
+    matched: (String, usize),
 }
 impl Display for Match {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -46,7 +48,7 @@ impl Display for Match {
                 true => "\x1b[1m\x1b[31m🆇\x1b[39m\x1b[0m",
             }
         }
-        write!(f, "\x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.filename.0, disp_flag(self.filename.1), self.line, self.matched.0, disp_flag(self.matched.1))
+        write!(f, "\x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.filename.0, disp_flag(self.filename.1 == self.filename.0.len()), self.line, self.matched.0, disp_flag(self.matched.1 == self.matched.0.len()))
     }
 }
 trait Restrict<T> {
@@ -61,8 +63,6 @@ impl Restrict<&str> for String {
             j-=1;
         }
         let result = source[..j].to_string();
-        // Pad the end to make sure it's the exact size.
-        let result = result + &String::from_iter(std::iter::repeat('\x00').take(max - j)); 
         return result;
     }
 }
@@ -90,17 +90,15 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
 
     for m in r.captures_iter(text) {
         let file_string = strip(m.name("f").unwrap().as_str());
-        let max_flag_f = NAME_LEN < file_string.len();   
 
         let lf = strip(m.name("l").unwrap().as_str());
 
         let mf = strip(m.name("m").unwrap().as_str());
-        let max_flag_m = NAME_LEN < mf.len();
 
         matches.push(Match {
-            filename: (String::restrict(&file_string, NAME_LEN), max_flag_f),
+            filename: (String::restrict(&file_string, NAME_LEN), NAME_LEN),
             line: lf.parse().expect("Unreadable line numbers"),
-            matched: (String::restrict(&mf, MATCH_LEN), max_flag_m),
+            matched: (String::restrict(&mf, MATCH_LEN), MATCH_LEN),
         });
         //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
     }
@@ -108,7 +106,7 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
     return matches;
 }
 
-///todo! voir le cout performance la couleur
+///todo! voir le cout performance de la couleur
 pub const MACGREP: OutputFormat = OutputFormat {
     filename: (0, "", ""),
     line: (1, ":", ":"),
