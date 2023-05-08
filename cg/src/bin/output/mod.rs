@@ -108,9 +108,16 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
     return matches;
 }
 
-pub const GREP: OutputFormat = OutputFormat {
+///todo! voir le cout performance la couleur
+pub const MACGREP: OutputFormat = OutputFormat {
     filename: (0, "", ""),
     line: (1, ":", ":"),
+    matched: (2, "", "\n"),
+};
+
+pub const GREP: OutputFormat = OutputFormat {
+    filename: (0, r"\[35m\[K", r"\[m\[K"),
+    line: (1, r"\[36m\[K:\[m\[K\[32m\[K", r"\[m\[K\[36m\[K:\[m\[K"),
     matched: (2, "", "\n"),
 };
 
@@ -121,9 +128,9 @@ pub const RIPGREP: OutputFormat = OutputFormat {
 };
 
 pub const UGREP: OutputFormat = OutputFormat {
-    filename: (0, r"[1;35m", r"[m[36m"),
-    line: (1, r":[m[1;32m", r"[m[36m:"),
-    matched: (2, "[m", "\n"),
+    filename: (0, r"\[1;35m", r"\[m\[36m"),
+    line: (1, r":\[m\[1;32m", r"\[m\[36m:"),
+    matched: (2, r"\[m", "\n"),
 };
 
 pub fn picker(tool: &str) -> OutputFormat {

@@ -3,6 +3,8 @@ use std::process::{Command,Output,Stdio,Child};
 use std::{io, fs};
 use clap::Parser;
 
+//use crate::input;
+
 mod input;
 mod output;
  
@@ -36,7 +38,7 @@ fn link(first: Child, command: String, args: Vec<String>) -> Child {
 }
 ///Finishes a call stack
 fn finish(last: Child) -> Result<Output, io::Error> {
-    return last.wait_with_output();
+    return last.wait_with_output(); //todo!
 }
 
 /// The full call
@@ -87,7 +89,7 @@ fn main() {
 ";
     output::read(output::RIPGREP, text);*/
 
-    
+    let start = std::time::Instant::now();
     let args = input::Args::parse();
     //println!("{:?}", args);
     let mut g = input::tools::RIPGREP.clone();
@@ -96,7 +98,12 @@ fn main() {
     let p = g.generate(q);
     println!("{:?}", p);
     let r = call(p).unwrap();
-    let result = output::read(output::RIPGREP, &String::from_utf8(r.stdout).unwrap());
+    let stop = std::time::Instant::now();
+
+    println!("here");
+    let s = &String::from_utf8(r.stdout).unwrap();
+    println!("here");
+    let result = output::read(output::RIPGREP, s);
     output::display(&result);
     output::write(&result);
 }
