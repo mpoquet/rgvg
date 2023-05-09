@@ -1,5 +1,8 @@
 use clap::{Parser, command, ArgGroup};
 use std::path::PathBuf;
+use regex::Regex;
+
+mod common;
 
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Open code, fast.", long_about = None)]
@@ -21,24 +24,41 @@ pub struct Args {
 // pico: pico +{line} {file}
 // nano: nano +{line} {file} 
 
-fn open() {
-    let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
+///tool definition format:
+///{tool_name}: [string] where [string] is any string containing the substrings {line} and {file}
+fn get_tool(tool_list: Vec<&str>, tool: String, _match: common::Match) {
+    let r = Regex::new(&("^".to_string() + &tool + ":")).unwrap();
+    let tool_def = tool_list.iter().find(|c| r.is_match(c)).expect("No tool with requested name!");
+    let r1 = Regex::new(r"\{file\}").unwrap();
+    let r2 = Regex::new(r"\{line\}").unwrap();
+    let cmd = r2.replace(&r1.replace(&r.replace(&tool_def, "").to_string(), _match.filename).to_string(), _match.line.to_string()).to_string();
+    println!("{}", cmd);
+}
 
-    let s = std::fs::read(h);
-    println!("Hello, world!");
+fn open(tool_list: String, id: usize, tool: String) {
+    let (r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    let request = s.get(id).expect("Delivered id was not valid! Valid IDs range between 0..MAX_ID.");
+
+    get_tool(tool_list.split('\n').collect(), tool, request.clone());
 }
 fn add_tool() {
-
+    todo!();
 }
 fn display() {
-
+    let (r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    common::display(r, &s);
 }
  
 fn main() {
     let r = Args::parse();
 
+    let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
+    let s = std::fs::read_to_string(h).unwrap_or(
+r"vscode: code -g {file}:{line}
+pico: pico +{line} {file}
+nano: nano +{line} {file}".to_string());
     match r.id {
-        Some(_) => open(),
+        Some(id) => open(s, id, r.tool.unwrap()),
         None => match r.new_tool {
             Some(_) => add_tool(),
             None => display(),

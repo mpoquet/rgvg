@@ -1,4 +1,6 @@
-use std::fmt::{Display};
+use std::path::PathBuf;
+
+use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH};
 
 use regex::Regex;
 
@@ -8,13 +10,10 @@ type Item = (usize,&'static str,&'static str);
 //ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
 //ugrep the ./documents -rn --color=always
 
-const NAME_LEN: usize = 512;
-const MATCH_LEN: usize = 512;
-
 pub struct OutputFormat {
-    /// The filename. Obviously mandatory.
+    /// The filename. 
     filename: Item,
-    /// Display line number. At least one of line and char must be present
+    /// Display line number.
     line: Item,
     /// Display global position in file. Points to the start of the line matched.
     // char: Item,
@@ -24,33 +23,9 @@ pub struct OutputFormat {
     // is_match_highlighted: bool,
 }
 
-impl From<&Match> for Vec<u8> {
-    fn from(value: &Match) -> Self {
-        let mut r: Vec<u8> = Vec::from(value.filename.0.clone());
-        r.extend(std::iter::repeat(0).take(value.filename.1 - value.filename.0.len()));
-        r.extend(value.line.to_be_bytes().into_iter());
-        r.extend(Vec::from(value.matched.0.clone()));
-        r.extend(std::iter::repeat(0).take(value.matched.1 - value.matched.0.len()));
-        return r;
-    }
-}
-#[derive(Debug)]
-pub struct Match {
-    filename: (String, usize),
-    line: usize,
-    matched: (String, usize),
-}
-impl Display for Match {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        fn disp_flag(b: bool) -> &'static str {
-            match b {
-                false => "",
-                true => "\x1b[1m\x1b[31m🆇\x1b[39m\x1b[0m",
-            }
-        }
-        write!(f, "\x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.filename.0, disp_flag(self.filename.1 == self.filename.0.len()), self.line, self.matched.0, disp_flag(self.matched.1 == self.matched.0.len()))
-    }
-}
+
+
+
 trait Restrict<T> {
     fn restrict(source: T, max: usize) -> Self;
 }
@@ -96,9 +71,9 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
         let mf = strip(m.name("m").unwrap().as_str());
 
         matches.push(Match {
-            filename: (String::restrict(&file_string, NAME_LEN), NAME_LEN),
+            filename: String::restrict(&file_string, NAME_LEN),
             line: lf.parse().expect("Unreadable line numbers"),
-            matched: (String::restrict(&mf, MATCH_LEN), MATCH_LEN),
+            matched: String::restrict(&mf, MATCH_LEN),
         });
         //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
     }
@@ -141,25 +116,37 @@ pub fn picker(tool: &str) -> OutputFormat {
 }
 
 pub fn display(result: &Vec<Match>) {
-    let mut i = 0;
-    for m in result {
-        match i%2 {
-            0 => println!("\x1b[31m{}\x1b[39m {}", i, m),
-            1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, m),
-            _ => panic!("CPU borken :("),
-        };
-        i+=1;
-    }
+    crate::common::display(PathBuf::new(), result);
 }
+
+#[cfg(target_family = "unix")]
+fn pthtob(v: PathBuf) -> Vec<u8> {
+    use std::os::unix::prelude::OsStrExt;
+    return v.as_os_str().as_bytes().to_vec();
+}
+#[cfg(target_family = "windows")]
+fn pthtob(v: PathBuf) -> Vec<u8> { //! Untested
+    use std::os::windows::prelude::OsStrExt;
+    return v.encode_wide().map(|v| v.to_be_bytes()).collect().concat();
+}
+
+fn header() -> Vec<u8> {
+    let mut s: Vec<u8> = (VERSION as usize).to_be_bytes().to_vec(); //Version tag
+    let v = std::env::current_dir().expect("Could not find current directory");
+    let c = pthtob(v);
+    let l = c.len();
+    s.extend(c);
+    s.extend(std::iter::repeat(0).take(NAME_LEN - l));
+    return s;
+}
+
 
 pub fn write(result: &Vec<Match>) {
     let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
     let v = v.concat();
-    let mut s: Vec<u8> = Vec::new();
-    s.extend(NAME_LEN.to_be_bytes());
-    s.extend(MATCH_LEN.to_be_bytes());
+    let mut s: Vec<u8> = header();
 
     s.extend(v);
-    let h = home::home_dir().expect("Could not find home dir.").join(".rgvg_last");
+    let h = home::home_dir().expect("Could not find home dir.").join(LAST_PATH);
     std::fs::write(h, s);
 }

@@ -7,6 +7,7 @@ use clap::Parser;
 
 mod input;
 mod output;
+mod common;
  
 
 ///Creates a command from a command string.
@@ -92,7 +93,7 @@ fn main() {
     let start = std::time::Instant::now();
     let args = input::Args::parse();
     //println!("{:?}", args);
-    let mut g = input::tools::RIPGREP.clone();
+    let mut g = input::tools::picker("ripgrep");
     let q = g.populate(args);
     //println!("{:?}", q);
     let p = g.generate(q);
@@ -100,10 +101,13 @@ fn main() {
     let r = call(p).unwrap();
     let stop = std::time::Instant::now();
 
-    println!("here");
+    println!("t1: {:?}", stop - start);
     let s = &String::from_utf8(r.stdout).unwrap();
-    println!("here");
+    let stop = std::time::Instant::now();
+    println!("t2: {:?}", stop - start);
     let result = output::read(output::RIPGREP, s);
-    output::display(&result);
+    let stop = std::time::Instant::now();
+    println!("t3: {:?}", stop - start);
+    //output::display(&result);
     output::write(&result);
 }
