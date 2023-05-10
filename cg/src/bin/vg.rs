@@ -1,6 +1,4 @@
 use clap::{Parser, command, ArgGroup};
-use common::command::{self, Cmd};
-use std::path::PathBuf;
 use std::io::Write;
 use regex::Regex;
 
@@ -35,20 +33,22 @@ fn get_tool(tool_list: Vec<&str>, tool: String) -> String {
 }
 
 fn open(tool_list: String, id: usize, tool: String) {
-    let (r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    let (mut r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
     let request = s.get(id).expect("Delivered id was not valid! Valid IDs range between 0..MAX_ID.");
+
+    r.push(request.filename.clone());
 
     let t = get_tool(tool_list.split('\n').collect(), tool);
     let mut t: Vec<String> = t.split(" ").map(|s| {
         let r1 = Regex::new(r"\{file\}").unwrap();
         let r2 = Regex::new(r"\{line\}").unwrap();
-        return r2.replace(&r1.replace(s, request.filename.to_owned()).to_string(), request.line.to_string()).to_string(); 
+        return r2.replace(&r1.replace(s, r.to_string_lossy()).to_string(), request.line.to_string()).to_string(); 
     }).collect();
     t.retain(|s| s != "");
     
     let c = (t.get(0).expect("Could not find executable!").to_string(), t[1..].to_vec());
 
-    command::blind_call(c).expect("An error occured opening in your target editor.");
+    common::command::blind_call(c).expect("An error occured opening in your target editor.");
 }
 fn add_tool(nt: String) {
     let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);

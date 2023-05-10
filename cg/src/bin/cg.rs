@@ -1,6 +1,3 @@
-use std::fs::write;
-use std::process::{Command,Output,Stdio,Child};
-use std::{io, fs};
 use clap::Parser;
 
 //use crate::input;
@@ -26,7 +23,7 @@ mod common;
 
 use crate::input::framework::Convertible;
 
-fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
+/*fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
     match cap {
         Some(x) => {
             if x.start() == x.end() {
@@ -37,7 +34,7 @@ fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
         },
         None => "",
     }
-}
+}*/
 
 fn main() {
     /*let r = Regex::new(r"((?P<n1>#\d{1,3})|(?P<n2>-\pL)|(?P<n3>--\pL+))((?P<d1>!)|(?P<d2><[\pL-]*\[\pL*\]>)|(?P<d3>))(?P<s>\{\pL+\})((?P<t1>\[\pL+\])|(?P<t2>))").unwrap();
@@ -78,7 +75,7 @@ fn main() {
     let s = &String::from_utf8(r.stdout).unwrap();
     let stop = std::time::Instant::now();
     println!("t2: {:?}", stop - start);
-    let result = output::read(output::RIPGREP, s);
+    let result = output::read(output::picker("ripgrep"), s);
     let stop = std::time::Instant::now();
     println!("t3: {:?}", stop - start);
     //output::display(&result);

@@ -115,6 +115,7 @@ pub fn picker(tool: &str) -> OutputFormat {
     }
 }
 
+#[allow(dead_code)]
 pub fn display(result: &Vec<Match>) {
     crate::common::display(PathBuf::new(), result);
 }
@@ -148,5 +149,5 @@ pub fn write(result: &Vec<Match>) {
 
     s.extend(v);
     let h = home::home_dir().expect("Could not find home dir.").join(LAST_PATH);
-    std::fs::write(h, s);
+    std::fs::write(h, s).expect("Could not write to history file.");
 }

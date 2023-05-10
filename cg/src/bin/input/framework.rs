@@ -87,6 +87,7 @@ pub trait Expand {
     type Key;
     type Item;
     fn expand(&mut self, key: Self::Key, value: Self::Item) where Self::Key: Ord;
+    #[allow(unused_variables)]
     fn expand_field(&mut self, value: &Self::Item) {}
 }
 
@@ -233,6 +234,7 @@ impl Transform<Vec<String>> for Argument {
 /// This set of transform functions is used in destination formatting.
 ///   When adding a new (dest) formatter, you need to edit each implementation.
 ///   When adding compatibility for a new type, you need to add a new implementation
+#[allow(unreachable_patterns)] //Formatters may in the future not be supported as destination formatters
 impl Transform<Formatter> for Vec<String> {
     fn transform(&mut self, value: &Formatter) {
         match value {
@@ -536,6 +538,7 @@ where Argument: Transform<U> {
 }
 
 impl Entry {
+    #[allow(dead_code)]
     pub const fn ignore() -> Self {
         return Entry {
             defaults_to: DefaultValue::Skip,

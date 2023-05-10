@@ -1,6 +1,7 @@
 use std::{fmt::{Display}, path::PathBuf, io::BufRead};
 
 pub const LAST_PATH: &'static str = ".rgvg_last";
+#[allow(dead_code)]
 pub const OPEN_FORMAT_PATH: &'static str = ".rgvg_open_format";
 pub const NAME_LEN: usize = 512;
 pub const MATCH_LEN: usize = 512;
@@ -76,6 +77,7 @@ fn read_header(data: &mut Vec<u8>) -> (usize, PathBuf) {
     return (n, s);
 }
 
+#[allow(dead_code)] //Needed bc its used in vg
 pub fn open_last() -> Option<(PathBuf, Vec<Match>)> {
     let h = home::home_dir().expect("Could not find home dir.").join(LAST_PATH);
 
@@ -100,6 +102,7 @@ pub fn open_last() -> Option<(PathBuf, Vec<Match>)> {
     return Some((h, m));
 }
 
+#[allow(dead_code)]
 pub fn display(pwd: PathBuf, result: &Vec<Match>) {
     let curpwd = std::env::current_dir().expect("Could not find current directory");
     let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
@@ -145,10 +148,10 @@ pub mod command {
         return build(command, args).spawn().expect("Failed command");
     }
     /// Links the first command's ouput to the second's input, then starts the second command.
-    fn link(first: Child, command: String, args: Vec<String>) -> Child {
+    /*fn link(first: Child, command: String, args: Vec<String>) -> Child {
         //first.stdout(Stdio::piped());
         return build(command,args).stdin(first.stdout.unwrap()).stdout(Stdio::piped()).spawn().expect("Failed command");
-    }
+    }*/
     ///Finishes a call stack
     fn finish(last: Child) -> Result<Output, std::io::Error> {
         return last.wait_with_output(); //todo!
@@ -157,11 +160,13 @@ pub mod command {
     fn blind_finish(last: &mut Child) -> Result<ExitStatus, std::io::Error> {
         return last.wait();
     }
-    
+
+    #[allow(dead_code)]
     /// The full call
     pub fn call(command: Cmd) -> Result<Output, std::io::Error> {
         finish(begin(command.0.to_string(), command.1))
     }
+    #[allow(dead_code)]
     pub fn blind_call(command: Cmd) -> Result<ExitStatus, std::io::Error> {
         blind_finish(&mut blind_begin(command.0.to_string(), command.1))
     }
