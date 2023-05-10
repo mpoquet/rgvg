@@ -63,7 +63,7 @@ pub const GREP: Grepper = Grepper {
         target_name: Name::LongC("exclude_dir"),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "--color=always -Hnr",
+    default_args:  "-Hnr",
     command: "grep",
 };
 
@@ -105,7 +105,7 @@ pub const RIPGREP: Grepper = Grepper {
         target_name: Name::Short('g'),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "--color=always -Hn --no-heading",
+    default_args:  "-Hn --no-heading",
     command: "rg",
 };
 
@@ -147,7 +147,7 @@ pub const UGREP: Grepper = Grepper {
         target_name: Name::LongC("exclude-dir"),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "-rn --color=always",
+    default_args:  "-rn",
     command: "ugrep",
 };
 

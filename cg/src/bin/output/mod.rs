@@ -37,7 +37,7 @@ impl Restrict<&str> for String {
         while j > 0 && !source.is_char_boundary(j) {
             j-=1;
         }
-        let result = source[..j].to_string();
+        let result = source[..j].to_owned();
         return result;
     }
 }
@@ -47,11 +47,11 @@ fn strip(text: &str) -> String {
     return r.replace_all(text, "").to_string();
 }
 
-pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
+fn create_outputformat(format: OutputFormat) -> Regex {
     let mut c: Vec<(usize, String)> = Vec::new();
-    c.push((format.filename.0, format.filename.1.to_string() + r"(?P<f>.*)" + format.filename.2));
-    c.push((format.line.0, format.line.1.to_string() + r"(?P<l>(\d)*)" + format.line.2));
-    c.push((format.matched.0, format.matched.1.to_string() + r"(?P<m>.*)" + format.matched.2));
+    c.push((format.filename.0, format.filename.1.to_string() + r"(?P<f>.+)" + format.filename.2));
+    c.push((format.line.0, format.line.1.to_string() + r"(?P<l>(\d)+)" + format.line.2));
+    c.push((format.matched.0, format.matched.1.to_string() + r"(?P<m>.+)" + format.matched.2));
 
     c.sort_by(|a, b| return a.0.cmp(&b.0));
 
@@ -60,19 +60,21 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
         q += &i.1;
     }
 
-    let r = Regex::new(&q).unwrap();
+    return Regex::new(&q).unwrap();
+}
+
+pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
+    let r = create_outputformat(format);
     let mut matches = Vec::new();
 
     for m in r.captures_iter(text) {
-        let file_string = strip(m.name("f").unwrap().as_str());
-
-        let lf = strip(m.name("l").unwrap().as_str());
-
-        let mf = strip(m.name("m").unwrap().as_str());
+        let file_string = m.name("f").unwrap().as_str();
+        let lf = m.name("l").unwrap().as_str();
+        let mf = m.name("m").unwrap().as_str();
 
         matches.push(Match {
             filename: String::restrict(&file_string, NAME_LEN),
-            line: lf.parse().expect("Unreadable line numbers"),
+            line: lf.parse().expect(&("Unreadable line number".to_owned() + m.get(0).unwrap().as_str())),
             matched: String::restrict(&mf, MATCH_LEN),
         });
         //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
@@ -82,28 +84,22 @@ pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
 }
 
 ///todo! voir le cout performance de la couleur
-pub const MACGREP: OutputFormat = OutputFormat {
+pub const GREP: OutputFormat = OutputFormat {
     filename: (0, "", ""),
     line: (1, ":", ":"),
     matched: (2, "", "\n"),
 };
 
-pub const GREP: OutputFormat = OutputFormat {
-    filename: (0, r"\[35m\[K", r"\[m\[K"),
-    line: (1, r"\[36m\[K:\[m\[K\[32m\[K", r"\[m\[K\[36m\[K:\[m\[K"),
-    matched: (2, "", "\n"),
-};
-
 pub const RIPGREP: OutputFormat = OutputFormat {
-    filename: (0, r"\[0m\[35m", r"\[0m"),
-    line: (1, r":\[0m\[32m", r"\[0m:"),
+    filename: (0, r"", r""),
+    line: (1, r":", r":"),
     matched: (2, "", "\n"),
 };
 
 pub const UGREP: OutputFormat = OutputFormat {
-    filename: (0, r"\[1;35m", r"\[m\[36m"),
-    line: (1, r":\[m\[1;32m", r"\[m\[36m:"),
-    matched: (2, r"\[m", "\n"),
+    filename: (0, r"", r""),
+    line: (1, r":", r":"),
+    matched: (2, r"", "\n"),
 };
 
 pub fn picker(tool: &str) -> OutputFormat {
@@ -143,6 +139,7 @@ fn header() -> Vec<u8> {
 
 
 pub fn write(result: &Vec<Match>) {
+    println!("Writing to \x1b[35m*${{HOME}}/.rgvg_last\x1b[39m...");
     let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
     let v = v.concat();
     let mut s: Vec<u8> = header();
