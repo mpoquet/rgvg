@@ -78,6 +78,8 @@ fn main() {
     let result = output::read(output::picker("ripgrep"), s);
     let stop = std::time::Instant::now();
     println!("t3: {:?}", stop - start);
-    //output::display(&result);
+    output::display(&result);
     output::write(&result);
+    let stop = std::time::Instant::now();
+    println!("t4: {:?}", stop - start);
 }
