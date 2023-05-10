@@ -2,6 +2,8 @@ use std::collections::{BTreeMap};
 use std::path::PathBuf;
 use std::fmt::{self, Display};
 use regex::Regex;
+use crate::common::command::Cmd;
+
 
 type Index = u8;
 
@@ -572,5 +574,5 @@ pub trait Convertible<T> {
     /// Polulate entry with clap data, returns the ordered entry bundle
     fn populate(&mut self, with: T) -> BTreeMap<Name, Vec<Entry>>;
     /// Takes clap data, and converts it to a command string.
-    fn generate(&self, with: BTreeMap<Name, Vec<Entry>>) -> super::Cmd;
+    fn generate(&self, with: BTreeMap<Name, Vec<Entry>>) -> Cmd;
 }

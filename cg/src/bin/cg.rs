@@ -19,33 +19,6 @@ mod common;
     }
     return output;
 }*/
-fn build(command: String, args: Vec<String>) -> Command {
-    let mut output = Command::new(command);
-
-    for i in args {
-        output.arg(i);
-    }
-    return output;
-}
-
-///Call the first command in a call chain
-fn begin(command: String, args: Vec<String>) -> Child {
-    return build(command, args).stdout(Stdio::piped()).spawn().expect("Failed command");
-}
-/// Links the first command's ouput to the second's input, then starts the second command.
-fn link(first: Child, command: String, args: Vec<String>) -> Child {
-    //first.stdout(Stdio::piped());
-    return build(command,args).stdin(first.stdout.unwrap()).stdout(Stdio::piped()).spawn().expect("Failed command");
-}
-///Finishes a call stack
-fn finish(last: Child) -> Result<Output, io::Error> {
-    return last.wait_with_output(); //todo!
-}
-
-/// The full call
-fn call(command: input::Cmd) -> Result<Output, io::Error> {
-    finish(begin(command.0.to_string(), command.1))
-}
 
 //NOTE: Search for command in PATH, try to find rust crate
 // Format stdout facile a lire avec grep
@@ -98,7 +71,7 @@ fn main() {
     //println!("{:?}", q);
     let p = g.generate(q);
     println!("{:?}", p);
-    let r = call(p).unwrap();
+    let r = common::command::call(p).unwrap();
     let stop = std::time::Instant::now();
 
     println!("t1: {:?}", stop - start);

@@ -29,5 +29,3 @@ pub struct Args {
     #[arg(long)]
     exclude_dir: Vec<String>,
 }
-
-pub type Cmd = (&'static str, Vec<String>);

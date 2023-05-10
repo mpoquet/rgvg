@@ -121,3 +121,49 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>) {
         i+=1;
     }
 }
+
+pub mod command {
+    use std::process::{Command,Output,Stdio,Child, ExitStatus};
+
+    pub type Cmd = (String, Vec<String>);
+
+    fn build(command: String, args: Vec<String>) -> Command {
+        let mut output = Command::new(command);
+    
+        for i in args {
+            output.arg(i);
+        }
+        return output;
+    }
+    
+    ///Call the first command in a call chain
+    fn begin(command: String, args: Vec<String>) -> Child {
+        return build(command, args).stdout(Stdio::piped()).spawn().expect("Failed command");
+    }
+    ///Call the first command in a call chain
+    fn blind_begin(command: String, args: Vec<String>) -> Child {
+        return build(command, args).spawn().expect("Failed command");
+    }
+    /// Links the first command's ouput to the second's input, then starts the second command.
+    fn link(first: Child, command: String, args: Vec<String>) -> Child {
+        //first.stdout(Stdio::piped());
+        return build(command,args).stdin(first.stdout.unwrap()).stdout(Stdio::piped()).spawn().expect("Failed command");
+    }
+    ///Finishes a call stack
+    fn finish(last: Child) -> Result<Output, std::io::Error> {
+        return last.wait_with_output(); //todo!
+    }
+    ///Finishes a call stack
+    fn blind_finish(last: &mut Child) -> Result<ExitStatus, std::io::Error> {
+        return last.wait();
+    }
+    
+    /// The full call
+    pub fn call(command: Cmd) -> Result<Output, std::io::Error> {
+        finish(begin(command.0.to_string(), command.1))
+    }
+    pub fn blind_call(command: Cmd) -> Result<ExitStatus, std::io::Error> {
+        blind_finish(&mut blind_begin(command.0.to_string(), command.1))
+    }
+    
+}

@@ -1,4 +1,5 @@
 use clap::{Parser, command, ArgGroup};
+use common::command::{self, Cmd};
 use std::path::PathBuf;
 use regex::Regex;
 
@@ -26,20 +27,27 @@ pub struct Args {
 
 ///tool definition format:
 ///{tool_name}: [string] where [string] is any string containing the substrings {line} and {file}
-fn get_tool(tool_list: Vec<&str>, tool: String, _match: common::Match) {
+fn get_tool(tool_list: Vec<&str>, tool: String) -> String {
     let r = Regex::new(&("^".to_string() + &tool + ":")).unwrap();
     let tool_def = tool_list.iter().find(|c| r.is_match(c)).expect("No tool with requested name!");
-    let r1 = Regex::new(r"\{file\}").unwrap();
-    let r2 = Regex::new(r"\{line\}").unwrap();
-    let cmd = r2.replace(&r1.replace(&r.replace(&tool_def, "").to_string(), _match.filename).to_string(), _match.line.to_string()).to_string();
-    println!("{}", cmd);
+    return r.replace(&tool_def, "").to_string();
 }
 
 fn open(tool_list: String, id: usize, tool: String) {
     let (r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
     let request = s.get(id).expect("Delivered id was not valid! Valid IDs range between 0..MAX_ID.");
 
-    get_tool(tool_list.split('\n').collect(), tool, request.clone());
+    let t = get_tool(tool_list.split('\n').collect(), tool);
+    let mut t: Vec<String> = t.split(" ").map(|s| {
+        let r1 = Regex::new(r"\{file\}").unwrap();
+        let r2 = Regex::new(r"\{line\}").unwrap();
+        return r2.replace(&r1.replace(s, request.filename.to_owned()).to_string(), request.line.to_string()).to_string(); 
+    }).collect();
+    t.retain(|s| s != "");
+    
+    let c = (t.get(0).expect("Could not find executable!").to_string(), t[1..].to_vec());
+
+    command::blind_call(c).expect("An error occured opening in your target editor.");
 }
 fn add_tool() {
     todo!();

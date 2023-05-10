@@ -1,6 +1,7 @@
 use super::framework::{Entry, Formatter, Name, Argument, DefaultValue, Convertible, Transformable, Expand, Transform};
 use super::Args;
 use std::collections::{BTreeMap};
+use crate::common::command::Cmd;
 
 
 #[derive(Clone)] 
@@ -191,13 +192,13 @@ impl Convertible<Args> for Grepper {
 
         return r;
     }
-    fn generate(&self, with: BTreeMap<Name, Vec<Entry>>) -> super::Cmd {
+    fn generate(&self, with: BTreeMap<Name, Vec<Entry>>) -> Cmd {
         let mut r: Vec<String> = Vec::new();
 
         for i in with {
             r.transform(&i.1);
         }
         r.extend(self.default_args.split(" ").map(|c| c.to_string()).collect::<Vec<String>>());
-        return (self.command, r);
+        return (self.command.to_string(), r);
     }
 }
