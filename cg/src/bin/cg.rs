@@ -60,26 +60,26 @@ fn main() {
 ";
     output::read(output::RIPGREP, text);*/
 
-    let start = std::time::Instant::now();
+    //let start = std::time::Instant::now();
     let args = input::Args::parse();
     //println!("{:?}", args);
     let mut g = input::tools::picker("ripgrep");
     let q = g.populate(args);
     //println!("{:?}", q);
     let p = g.generate(q);
-    println!("{:?}", p);
+    //println!("{:?}", p);
     let r = common::command::call(p).unwrap();
-    let stop = std::time::Instant::now();
+    //let stop = std::time::Instant::now();
 
-    println!("t1: {:?}", stop - start);
+    //println!("t1: {:?}", stop - start);
     let s = &String::from_utf8(r.stdout).unwrap();
-    let stop = std::time::Instant::now();
-    println!("t2: {:?}", stop - start);
+    //let stop = std::time::Instant::now();
+    //println!("t2: {:?}", stop - start);
     let result = output::read(output::picker("ripgrep"), s);
-    let stop = std::time::Instant::now();
-    println!("t3: {:?}", stop - start);
+    //let stop = std::time::Instant::now();
+    //println!("t3: {:?}", stop - start);
     output::display(&result);
     output::write(&result);
-    let stop = std::time::Instant::now();
-    println!("t4: {:?}", stop - start);
+    //let stop = std::time::Instant::now();
+    //println!("t4: {:?}", stop - start);
 }

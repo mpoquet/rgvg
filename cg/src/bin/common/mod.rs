@@ -141,11 +141,11 @@ pub mod command {
     
     ///Call the first command in a call chain
     fn begin(command: String, args: Vec<String>) -> Child {
-        return build(command, args).stdout(Stdio::piped()).spawn().expect("Failed command");
+        return build(command, args).stdout(Stdio::piped()).spawn().expect("Command could not be executed.");
     }
     ///Call the first command in a call chain
     fn blind_begin(command: String, args: Vec<String>) -> Child {
-        return build(command, args).spawn().expect("Failed command");
+        return build(command, args).spawn().expect("Command could not be executed.");
     }
     /// Links the first command's ouput to the second's input, then starts the second command.
     /*fn link(first: Child, command: String, args: Vec<String>) -> Child {

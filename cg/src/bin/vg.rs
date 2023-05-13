@@ -4,6 +4,13 @@ use regex::Regex;
 
 mod common;
 
+const TOOLS: &'static str = 
+r"vscode: code -g {file}:{line}
+pico: pico +{line} {file}
+nano: nano +{line} {file}
+vim: vim +{line} {file}
+emacs: emacs +{line} {file}";
+
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Open code, fast.", long_about = None)]
 #[command(group(ArgGroup::new("use").args(["id"]).requires("tool")))]
@@ -53,11 +60,7 @@ fn open(tool_list: String, id: usize, tool: String) {
 fn add_tool(nt: String) {
     let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
         if !h.exists() {
-            std::fs::write(h, 
-r"vscode: code -g {file}:{line}
-pico: pico +{line} {file}
-nano: nano +{line} {file}
-".to_owned() + &nt + "\n").expect("Could not create tool registry in your home directory!")
+            std::fs::write(h, TOOLS.to_owned() + &nt + "\n").expect("Could not create tool registry in your home directory!")
         } else if h.is_file() {
             let mut e = std::fs::OpenOptions::new().append(true).open(h).expect("Could not edit tool registry!");
             writeln!(e, "{}",  nt).expect("Could not write to the tool registry.");
@@ -72,10 +75,7 @@ fn main() {
     let r = Args::parse();
 
     let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
-    let s = std::fs::read_to_string(h).unwrap_or(
-r"vscode: code -g {file}:{line}
-pico: pico +{line} {file}
-nano: nano +{line} {file}".to_string());
+    let s = std::fs::read_to_string(h).unwrap_or(TOOLS.to_owned());
     match r.id {
         Some(id) => open(s, id, r.tool.unwrap()),
         None => match r.new_tool {

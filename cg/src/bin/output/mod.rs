@@ -139,7 +139,7 @@ fn header() -> Vec<u8> {
 
 
 pub fn write(result: &Vec<Match>) {
-    println!("Writing to \x1b[35m*${{HOME}}/.rgvg_last\x1b[39m...");
+    //println!("Writing to \x1b[35m*${{HOME}}/.rgvg_last\x1b[39m...");
     let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
     let v = v.concat();
     let mut s: Vec<u8> = header();

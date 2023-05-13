@@ -7,9 +7,12 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Find code, fast.", long_about = None)]
 pub struct Args {
+    /// Externary option - defines the tool to use
+    #[arg(long)]
+    tool: Option<String>, //todo!
     /// The regular expression used for searching.
     #[arg(required=true,value_name="PATTERN")]
-    regex_pattern: String,
+    regex_pattern: String, //todo!
     /// The file or directory to search.
     #[arg(value_name="PATH")]
     file: Option<PathBuf>,
