@@ -1,4 +1,4 @@
-use std::{path::PathBuf, process::exit};
+use std::{path::PathBuf};
 
 use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH, self};
 
@@ -63,6 +63,7 @@ fn create_outputformat(format: OutputFormat) -> Regex {
     return Regex::new(&q).unwrap();
 }
 
+#[allow(dead_code)]
 pub fn read(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
     let r = create_outputformat(format);
     let mut matches = Vec::new();

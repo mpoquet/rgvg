@@ -13,8 +13,10 @@ emacs: emacs +{line} {file}";
 
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Open code, fast.", long_about = None)]
-#[command(group(ArgGroup::new("use").args(["id"]).requires("tool")))]
-#[command(group(ArgGroup::new("existing").args(["new_tool"]).conflicts_with_all(["use", "tool"])))]
+#[command(group(ArgGroup::new("use").args(["tool"]).requires("id")))]
+#[command(group(ArgGroup::new("existing").args(["new_tool"]).conflicts_with_all(["use", "list_tools"])))]
+#[command(group(ArgGroup::new("id").args(["id"]).conflicts_with_all(["new_tool", "list_tools"])))]
+
 pub struct Args {
     /// The regular expression used for searching.
     #[arg(value_name="ID")]
@@ -23,11 +25,14 @@ pub struct Args {
     #[arg(long, default_value="yes")]
     color: String,
     /// The tool name to use.
-    #[arg(short,long)]
-    tool: Option<String>,
+    #[arg(short,long,default_value="pico")]
+    tool: String,
     /// The tool to define.
     #[arg(short,long)]
     new_tool: Option<String>,
+    /// Lists all available tools
+    #[arg(short,long)]
+    list_tools: bool,
 }
 
 // vscode: code -g {file}:{line}
@@ -77,10 +82,18 @@ fn main() {
     let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
     let s = std::fs::read_to_string(h).unwrap_or(TOOLS.to_owned());
     match r.id {
-        Some(id) => open(s, id, r.tool.unwrap()),
+        Some(id) => open(s, id, r.tool),
         None => match r.new_tool {
             Some(nt) => add_tool(nt),
-            None => common::last(common::color(&r.color)),
+            None => match r.list_tools {
+                true => {
+                    let r = Regex::new(&(r"(?m)^(\w+):.*$")).unwrap();
+                    for t in r.captures_iter(&s) {
+                        println!("{}", &t[1]);
+                    }
+                },
+                false => common::last(common::color(&r.color)),
+            }
         }
     }
 }

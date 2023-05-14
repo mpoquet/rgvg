@@ -23,12 +23,13 @@ pub enum Name {
     Undefined,
 }
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub enum Argument {
     /// A collection type. Hopefully.
     CollectionText(Option<Vec<String>>),
     /// A string designating a file (or a PathBuff)
     PathPattern(Option<PathBuf>),
-    /// A list of file desibnators
+    /// A list of file designators
     CollectionPathPattern(Option<Vec<PathBuf>>),
     /// A regular string
     Text(Option<String>),
@@ -47,6 +48,7 @@ pub enum Formatter {
     Prefix(&'static str)
 }
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 pub enum DefaultValue {
     /// CANNOT be ommited
     Mandatory, 
@@ -510,7 +512,7 @@ impl TryFrom<&str> for Entry {
     ///           #0!{pattern}[str]
     fn try_from(value: &str) -> Result<Self, Self::Error> {
         let r = Regex::new(r"((?P<n1>#\d{1,3})|(?P<n2>-\pL)|(?P<n3>--\pL+))((?P<d1>!)|(?P<d2><[\pL-]*>)|(?P<d3>))(?P<s>\{\pL+\})((?P<t1>\[\pL+\])|(?P<t2>))").unwrap();
-        let c = r.captures(value);
+        let _c = r.captures(value);
 
 
 

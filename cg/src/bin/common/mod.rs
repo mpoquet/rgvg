@@ -160,6 +160,7 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
     }
 }
 
+#[allow(dead_code)]
 pub fn display_head(pwd: PathBuf, color: bool) {
     let curpwd = std::env::current_dir().expect("Could not find current directory");
     let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
@@ -175,23 +176,24 @@ pub fn display_head(pwd: PathBuf, color: bool) {
         println!("Within {}:", p);
     }
 }
+#[allow(dead_code)]
 pub fn display_once(result: &Match, color: bool) {
-    static mut i:i32 = 0;
+    static mut I:i32 = 0;
     unsafe {
         if color {
-            match i%2 {
-                0 => println!("\x1b[31m{}\x1b[39m {}", i, result.disp()),
-                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, result.disp()),
+            match I%2 {
+                0 => println!("\x1b[31m{}\x1b[39m {}", I, result.disp()),
+                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", I, result.disp()),
                 _ => panic!("CPU borken :("),
             };
-            i+=1;
+            I+=1;
         } else {
-            match i%2 {
-                0 => println!("{} {}", i, result),
-                1 => println!("{} {}", i, result),
+            match I%2 {
+                0 => println!("{} {}", I, result),
+                1 => println!("{} {}", I, result),
                 _ => panic!("CPU borken :("),
             };
-            i+=1;
+            I+=1;
         }
     }
 }
