@@ -1,11 +1,16 @@
 pub mod framework;
 pub mod tools;
 
-use clap::{Parser, command};
+use clap::{Parser, command, ArgGroup};
 use std::path::PathBuf;
 
+
+/// Interesting tools: clap_complete, clap_man
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Find code, fast.", long_about = None)]
+#[command(group(ArgGroup::new("regex").args(["tool", "file", "casei", "include_files", "include_dir", "exclude_files", "exclude_dir"]).multiple(true).requires("regex_pattern")))]
+#[command(group(ArgGroup::new("tools-l").args(["list_tools"]).conflicts_with_all(["regex", "color"])))]
+
 pub struct Args {
     /// Externary option - defines the tool to use. Possible tools are grep, ripgrep, ugrep.
     #[arg(short,long, default_value="grep")]
