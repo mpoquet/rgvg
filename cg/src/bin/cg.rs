@@ -36,6 +36,31 @@ use crate::input::framework::Convertible;
     }
 }*/
 
+fn search(args: input::Args) {
+    let tool = &args.tool;
+    let color = common::color(&args.color);
+    //println!("{:?}", args);
+    let mut g = input::tools::picker(&tool);
+    let q = g.populate(&args);
+    //println!("{:?}", q);
+    let p = g.generate(q);
+    println!("{:?}", p);
+    let r = common::command::call(p).unwrap();
+    //let stop = std::time::Instant::now();
+
+    //println!("t1: {:?}", stop - start);
+    let s = &String::from_utf8(r.stdout).unwrap();
+    //let stop = std::time::Instant::now();
+    //println!("t2: {:?}", stop - start);
+    let result = output::read_display(output::picker(&tool), s, color);//output::read(output::picker(&tool), s, color);
+    //let stop = std::time::Instant::now();
+    //println!("t3: {:?}", stop - start);
+    //output::display(&result, color);
+    output::write(&result);
+    //let stop = std::time::Instant::now();
+    //println!("t4: {:?}", stop - start);
+}
+
 fn main() {
     /*let r = Regex::new(r"((?P<n1>#\d{1,3})|(?P<n2>-\pL)|(?P<n3>--\pL+))((?P<d1>!)|(?P<d2><[\pL-]*\[\pL*\]>)|(?P<d3>))(?P<s>\{\pL+\})((?P<t1>\[\pL+\])|(?P<t2>))").unwrap();
     let text = "#1<-[str]>{path}[path] -i{casei}  #0!{pattern}[str] --estrogen{estr}[int]";
@@ -62,24 +87,18 @@ fn main() {
 
     //let start = std::time::Instant::now();
     let args = input::Args::parse();
-    //println!("{:?}", args);
-    let mut g = input::tools::picker("ripgrep");
-    let q = g.populate(args);
-    //println!("{:?}", q);
-    let p = g.generate(q);
-    //println!("{:?}", p);
-    let r = common::command::call(p).unwrap();
-    //let stop = std::time::Instant::now();
+    match args.list_tools {
+        false => match &args.regex_pattern {
+            None => common::last(common::color(&args.color)),
+            Some(_) => search(args)
+        },
+        true => {
+            let tools = ["grep", "ripgrep", "ugrep"];
+            for t in tools {
+                println!("{}", t);
+            }
+        },
+    }
 
-    //println!("t1: {:?}", stop - start);
-    let s = &String::from_utf8(r.stdout).unwrap();
-    //let stop = std::time::Instant::now();
-    //println!("t2: {:?}", stop - start);
-    let result = output::read(output::picker("ripgrep"), s);
-    //let stop = std::time::Instant::now();
-    //println!("t3: {:?}", stop - start);
-    output::display(&result);
-    output::write(&result);
-    //let stop = std::time::Instant::now();
-    //println!("t4: {:?}", stop - start);
+    
 }

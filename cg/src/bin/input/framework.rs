@@ -177,7 +177,7 @@ impl From<&'static str> for Argument {
 impl Transform<String> for Argument {
     fn transform(&mut self, value: &String) {
         match self {
-            Argument::Text(x) => {*x = Some(value.to_string())},
+            Argument::Text(x) => {*x = Some(value.to_owned())},
             Argument::Empty(x) => {*x = Some(())}
             _ => panic!("Unspported transformation!")
         }
@@ -213,6 +213,18 @@ impl Transform<Option<PathBuf>> for Argument {
             },
             Argument::Text(x) => match value {
                 Some(p) => {*x = Some(p.display().to_string())},
+                None => {*x = None},
+            },
+            Argument::Empty(x) => {*x = Some(())}
+            _ => panic!("Unspported transformation!")
+        }
+    }
+}
+impl Transform<Option<String>> for Argument {
+    fn transform(&mut self, value: &Option<String>) {
+        match self {
+            Argument::Text(x) => match value {
+                Some(p) => {*x = Some(p.to_owned())},
                 None => {*x = None},
             },
             Argument::Empty(x) => {*x = Some(())}
@@ -575,7 +587,7 @@ impl Expand for BTreeMap<Name,Vec<Entry>> {
 
 pub trait Convertible<T> {
     /// Polulate entry with clap data, returns the ordered entry bundle
-    fn populate(&mut self, with: T) -> BTreeMap<Name, Vec<Entry>>;
+    fn populate(&mut self, with: &T) -> BTreeMap<Name, Vec<Entry>>;
     /// Takes clap data, and converts it to a command string.
     fn generate(&self, with: BTreeMap<Name, Vec<Entry>>) -> Cmd;
 }

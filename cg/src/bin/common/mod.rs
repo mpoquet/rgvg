@@ -38,10 +38,30 @@ impl Display for Match {
         fn disp_flag(b: bool) -> &'static str {
             match b {
                 false => "",
+                true => ">",
+            }
+        }
+        write!(f, "{}{} {} {}{}", self.filename, disp_flag(NAME_LEN == self.filename.len()), self.line, self.matched, disp_flag(MATCH_LEN == self.matched.len()))
+    }
+}
+impl Match {
+    fn disp(&self) -> String {
+        fn disp_flag(b: bool) -> &'static str {
+            match b {
+                false => "",
                 true => "\x1b[1m\x1b[31m🆇\x1b[39m\x1b[0m",
             }
         }
-        write!(f, "\x1b[35m{}{} \x1b[34m{} \x1b[32m{}{}\x1b[0m", self.filename, disp_flag(NAME_LEN == self.filename.len()), self.line, self.matched, disp_flag(MATCH_LEN == self.matched.len()))
+        let mut r = "\x1b[35m".to_owned();
+        r += &self.filename;
+        r += disp_flag(NAME_LEN == self.filename.len());
+        r += "\x1b[34m ";
+        r += &self.line.to_string();
+        r += "\x1b[32m ";
+        r += &self.matched;
+        r += disp_flag(NAME_LEN == self.matched.len());
+        r += "\x1b[0m";
+        return r;
     }
 }
 
@@ -103,7 +123,7 @@ pub fn open_last() -> Option<(PathBuf, Vec<Match>)> {
 }
 
 #[allow(dead_code)]
-pub fn display(pwd: PathBuf, result: &Vec<Match>) {
+pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
     let curpwd = std::env::current_dir().expect("Could not find current directory");
     let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
         true => "this directory",
@@ -112,16 +132,82 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>) {
             None => "{unprintable_string}",
         },
     };
+    if color {
+        println!("Within \x1b[35m{}\x1b[39m:", p);
+    } else {
+        println!("Within {}:", p);
+    }
+    if color {
+        let mut i = 0;
+        for m in result {
+            match i%2 {
+                0 => println!("\x1b[31m{}\x1b[39m {}", i, m.disp()),
+                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, m.disp()),
+                _ => panic!("CPU borken :("),
+            };
+            i+=1;
+        }
+    } else {
+        let mut i = 0;
+        for m in result {
+            match i%2 {
+                0 => println!("{} {}", i, m),
+                1 => println!("{} {}", i, m),
+                _ => panic!("CPU borken :("),
+            };
+            i+=1;
+        }
+    }
+}
 
-    println!("Within \x1b[35m{}\x1b[39m:", p);
-    let mut i = 0;
-    for m in result {
-        match i%2 {
-            0 => println!("\x1b[31m{}\x1b[39m {}", i, m),
-            1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, m),
-            _ => panic!("CPU borken :("),
-        };
-        i+=1;
+pub fn display_head(pwd: PathBuf, color: bool) {
+    let curpwd = std::env::current_dir().expect("Could not find current directory");
+    let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
+        true => "this directory",
+        false => match pwd.to_str() {
+            Some(s) => s,
+            None => "{unprintable_string}",
+        },
+    };
+    if color {
+        println!("Within \x1b[35m{}\x1b[39m:", p);
+    } else {
+        println!("Within {}:", p);
+    }
+}
+pub fn display_once(result: &Match, color: bool) {
+    static mut i:i32 = 0;
+    unsafe {
+        if color {
+            match i%2 {
+                0 => println!("\x1b[31m{}\x1b[39m {}", i, result.disp()),
+                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, result.disp()),
+                _ => panic!("CPU borken :("),
+            };
+            i+=1;
+        } else {
+            match i%2 {
+                0 => println!("{} {}", i, result),
+                1 => println!("{} {}", i, result),
+                _ => panic!("CPU borken :("),
+            };
+            i+=1;
+        }
+    }
+}
+
+pub fn last(color: bool) {
+    let (r,s) = open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    display(r, &s, color);
+}
+
+pub fn color(color: &String) -> bool {
+    match color.as_str() {
+        "always" => true,
+        "yes" => true,
+        "never" => false,
+        "no" => false,
+        _ => panic!("{} is not a valid color setting", color)
     }
 }
 

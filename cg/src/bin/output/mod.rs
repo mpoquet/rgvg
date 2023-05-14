@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+use std::{path::PathBuf, process::exit};
 
-use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH};
+use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH, self};
 
 use regex::Regex;
 
@@ -49,9 +49,9 @@ fn strip(text: &str) -> String {
 
 fn create_outputformat(format: OutputFormat) -> Regex {
     let mut c: Vec<(usize, String)> = Vec::new();
-    c.push((format.filename.0, format.filename.1.to_string() + r"(?P<f>.+)" + format.filename.2));
-    c.push((format.line.0, format.line.1.to_string() + r"(?P<l>(\d)+)" + format.line.2));
-    c.push((format.matched.0, format.matched.1.to_string() + r"(?P<m>.+)" + format.matched.2));
+    c.push((format.filename.0, format.filename.1.to_string() + r"(.+)" + format.filename.2));
+    c.push((format.line.0, format.line.1.to_string() + r"(\d+)" + format.line.2));
+    c.push((format.matched.0, format.matched.1.to_string() + r"(.+)" + format.matched.2));
 
     c.sort_by(|a, b| return a.0.cmp(&b.0));
 
@@ -63,21 +63,60 @@ fn create_outputformat(format: OutputFormat) -> Regex {
     return Regex::new(&q).unwrap();
 }
 
-pub fn read(format: OutputFormat, text: &str) -> Vec<Match> {
+pub fn read(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
     let r = create_outputformat(format);
     let mut matches = Vec::new();
 
-    for m in r.captures_iter(text) {
-        let file_string = m.name("f").unwrap().as_str();
-        let lf = m.name("l").unwrap().as_str();
-        let mf = m.name("m").unwrap().as_str();
+    if color {
+        for m in r.captures_iter(text) {
+            matches.push(Match {
+                filename: String::restrict(&m[1], NAME_LEN),
+                line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
+                matched: String::restrict(strip(&m[3]).as_str(), MATCH_LEN),
+            });
+            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
+        }
+    } else {
+        for m in r.captures_iter(text) {
+            matches.push(Match {
+                filename: String::restrict(&m[1], NAME_LEN),
+                line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
+                matched: String::restrict(&m[3], MATCH_LEN),
+            });
+            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
+        }
+    }
 
-        matches.push(Match {
-            filename: String::restrict(&file_string, NAME_LEN),
-            line: lf.parse().expect(&("Unreadable line number".to_owned() + m.get(0).unwrap().as_str())),
-            matched: String::restrict(&mf, MATCH_LEN),
-        });
-        //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
+    return matches;
+}
+
+pub fn read_display(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
+    common::display_head(PathBuf::new(), color);
+    let r = create_outputformat(format);
+    let mut matches = Vec::new();
+
+    if color {
+        for m in r.captures_iter(text) {
+            let m = Match {
+                filename: String::restrict(&m[1], NAME_LEN),
+                line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
+                matched: String::restrict(strip(&m[3]).as_str(), MATCH_LEN),
+            };
+            common::display_once(&m, color);
+            matches.push(m);
+            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
+        }
+    } else {
+        for m in r.captures_iter(text) {
+            let m = Match {
+                filename: String::restrict(&m[1], NAME_LEN),
+                line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
+                matched: String::restrict(&m[3], MATCH_LEN),
+            };
+            common::display_once(&m, color);
+            matches.push(m);
+            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
+        }
     }
 
     return matches;
@@ -112,8 +151,8 @@ pub fn picker(tool: &str) -> OutputFormat {
 }
 
 #[allow(dead_code)]
-pub fn display(result: &Vec<Match>) {
-    crate::common::display(PathBuf::new(), result);
+pub fn display(result: &Vec<Match>, color: bool) {
+    crate::common::display(PathBuf::new(), result, color);
 }
 
 #[cfg(target_family = "unix")]

@@ -19,6 +19,9 @@ pub struct Args {
     /// The regular expression used for searching.
     #[arg(value_name="ID")]
     id: Option<usize>,
+    /// Color mode
+    #[arg(long, default_value="yes")]
+    color: String,
     /// The tool name to use.
     #[arg(short,long)]
     tool: Option<String>,
@@ -66,10 +69,7 @@ fn add_tool(nt: String) {
             writeln!(e, "{}",  nt).expect("Could not write to the tool registry.");
         }
     }
-fn display() {
-    let (r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
-    common::display(r, &s);
-}
+
  
 fn main() {
     let r = Args::parse();
@@ -80,7 +80,7 @@ fn main() {
         Some(id) => open(s, id, r.tool.unwrap()),
         None => match r.new_tool {
             Some(nt) => add_tool(nt),
-            None => display(),
+            None => common::last(common::color(&r.color)),
         }
     }
 }

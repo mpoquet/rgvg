@@ -6,14 +6,14 @@ then
     then
         if test "$2" = "linux" 
         then
-            mkdir "./documents/linux"
+            mkdir "./test/documents/linux"
             echo "Downloading Kernel..."
-            git clone --depth 1 https://github.com/BurntSushi/linux ./documents/linux
+            git clone --depth 1 https://github.com/BurntSushi/linux ./test/documents/linux
         fi
     else
         if test "$2" = "linux" 
         then
-            sudo rm -r "./documents/linux"
+            sudo rm -r "./test/documents/linux"
         fi
     fi
 fi

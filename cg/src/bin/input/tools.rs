@@ -54,13 +54,13 @@ pub const GREP: Grepper = Grepper {
     include_dir: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
-        target_name: Name::LongC("include_dir"),
+        target_name: Name::LongC("include-dir"),
         target_type: Argument::CollectionText(None),
     },
     exclude_dir: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
-        target_name: Name::LongC("exclude_dir"),
+        target_name: Name::LongC("exclude-dir"),
         target_type: Argument::CollectionText(None),
     },
     default_args:  "-Hnr",
@@ -156,7 +156,7 @@ pub fn picker(tool: &str) -> Grepper {
         "grep" => self::GREP,
         "ripgrep" => self::RIPGREP,
         "ugrep" => self::UGREP,
-        _ => panic!("Unkown tool requested"),
+        _ => panic!("Unkown tool requested!"),
     }
 }
 
@@ -172,7 +172,7 @@ impl Convertible<Args> for Grepper {
     ///     then throw all the non-ordered ones after.
     ///   To optimize the whole thing, we generate the arguments in the same time;
     ///     throw the non-positionals in a vec, and the positionals in a tree. 
-    fn populate(&mut self, with: Args) -> BTreeMap<Name, Vec<Entry>> {
+    fn populate(&mut self, with: &Args) -> BTreeMap<Name, Vec<Entry>> {
         let mut r: BTreeMap<Name, Vec<Entry>> = BTreeMap::new();
         self.regex_pattern.fill(&with.regex_pattern);
         self.file.fill(&with.file);
