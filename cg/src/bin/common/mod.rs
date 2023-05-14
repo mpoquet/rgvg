@@ -1,4 +1,4 @@
-use std::{fmt::{Display}, path::PathBuf, io::BufRead};
+use std::{fmt::Display, path::PathBuf, io::BufRead};
 
 pub const LAST_PATH: &'static str = ".rgvg_last";
 #[allow(dead_code)]
@@ -65,7 +65,26 @@ impl Match {
     }
 }
 
-#[derive(Debug, Clone)]
+impl PartialOrd for Match {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        let a = self.filename.cmp(&other.filename);
+        match a {
+            std::cmp::Ordering::Equal => return Some(self.line.cmp(&other.line)),
+            _ => Some(a),
+        }
+    }
+}
+impl Ord for Match {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        let a = self.filename.cmp(&other.filename);
+        match a {
+            std::cmp::Ordering::Equal => return self.line.cmp(&other.line),
+            _ => a,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Match {
     pub filename: String,
     pub line: usize,

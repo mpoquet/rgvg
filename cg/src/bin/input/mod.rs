@@ -8,7 +8,7 @@ use std::path::PathBuf;
 /// Interesting tools: clap_complete, clap_man
 #[derive(Parser, Debug)]
 #[command(author = "SliceOfArdath", version, about = "Find code, fast.", long_about = None)]
-#[command(group(ArgGroup::new("regex").args(["tool", "file", "casei", "include_files", "include_dir", "exclude_files", "exclude_dir"]).multiple(true).requires("regex_pattern")))]
+#[command(group(ArgGroup::new("regex").args(["tool", "file", "casei", "include_files", "include_dir", "exclude_files", "exclude_dir", "order_results"]).multiple(true).requires("regex_pattern")))]
 #[command(group(ArgGroup::new("tools-l").args(["list_tools"]).conflicts_with_all(["regex", "color"])))]
 
 pub struct Args {
@@ -20,7 +20,10 @@ pub struct Args {
     pub list_tools: bool, 
     /// Color mode
     #[arg(long, default_value="yes")]
-    pub color: String, 
+    pub color: String,
+    /// Order results alphabeticacally according to file name, line number, and line number
+    #[arg(long,short)]
+    pub order_results: bool,
     /// The regular expression used for searching.
     #[arg(value_name="PATTERN")]
     pub regex_pattern: Option<String>,

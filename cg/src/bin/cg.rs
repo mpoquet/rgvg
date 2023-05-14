@@ -52,10 +52,17 @@ fn search(args: input::Args) {
     let s = &String::from_utf8(r.stdout).unwrap();
     //let stop = std::time::Instant::now();
     //println!("t2: {:?}", stop - start);
-    let result = output::read_display(output::picker(&tool), s, color);//output::read(output::picker(&tool), s, color);
+    let result = match &args.order_results {
+        false => output::read_display(output::picker(&tool), s, color),
+        true => {
+            let mut r = output::read(output::picker(&tool), s, color);
+            r.sort();
+            output::display(&r, color);
+            r
+        }
+    };
     //let stop = std::time::Instant::now();
     //println!("t3: {:?}", stop - start);
-    //output::display(&result, color);
     output::write(&result);
     //let stop = std::time::Instant::now();
     //println!("t4: {:?}", stop - start);

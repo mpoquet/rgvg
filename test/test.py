@@ -10,9 +10,12 @@ tool_list = ["ripgrep", "grep", "ugrep"]
 def run(command:str):
     subprocess.run(command, shell=True)
 
-def test_with_tool(tool: str, option_count:str):
+def cg_test_with_tool(tool: str, option_count:str):
     print('\x1b[1mRunning tests for\x1b[34m', tool + '\x1b[39m...\x1b[0m')
     cmd = "./cg/target/release/cg "
+
+def cg_suite_0(tool: str):
+    #Basic tests
     
 
 if len(sys.argv) == 1:

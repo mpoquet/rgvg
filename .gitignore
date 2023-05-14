@@ -1,3 +1,4 @@
 **/.DS_Store
 **/.vscode
-test/documents/linux
+test/benchmarks/**
+!test/benchmarks/install.sh
