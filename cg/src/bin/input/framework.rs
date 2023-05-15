@@ -237,13 +237,22 @@ impl Transform<Option<String>> for Argument {
 impl Transform<Vec<String>> for Argument {
     fn transform(&mut self, value: &Vec<String>) {
         match self {
-            Argument::CollectionText(x) => { *x = Some(value.to_vec()) },
+            Argument::CollectionText(x) => { *x = Some(value.to_owned()) },
             Argument::Empty(x) => {*x = Some(())}
             _ => panic!("Unspported transformation!")
         }
     }
 }
-
+impl Transform<Vec<PathBuf>> for Argument {
+    fn transform(&mut self, value: &Vec<PathBuf>) {
+        match self {
+            Argument::CollectionPathPattern(x) => { *x = Some(value.to_owned()) },
+            Argument::CollectionText(x) => {*x = Some(value.iter().map(|p| p.display().to_string()).collect())},
+            Argument::Empty(x) => {*x = Some(())}
+            _ => panic!("Unspported transformation!")
+        }
+    }
+}
 
 /// This set of transform functions is used in destination formatting.
 ///   When adding a new (dest) formatter, you need to edit each implementation.
@@ -272,7 +281,7 @@ impl Transform<Vec<Entry>> for Vec<String> {
     }
 }
 
-
+#[allow(unreachable_patterns)]
 impl Generate for Entry {
     fn generate(self) -> Vec<String> {
         let defaults = &self.defaults_to.clone().into();
@@ -286,6 +295,7 @@ impl Generate for Entry {
             Argument::PathPattern(x) => optional_vectorization(x, defaults),
             Argument::Empty(x) => optional_vectorization(x, defaults),
             Argument::CollectionText(x) => optional_vectorization(x, defaults),
+            Argument::CollectionPathPattern(x) => optional_vectorization(x, defaults),
             Argument::Number(x)  => optional_vectorization(x, defaults),
             _ => panic!("Unsupported type: {:?}", self),
         }

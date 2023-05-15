@@ -32,7 +32,7 @@ pub struct Args {
     pub regex_pattern: Option<String>,
     /// The file or directory to search.
     #[arg(value_name="PATH")]
-    file: Option<PathBuf>,
+    file: Vec<PathBuf>,
     /// Case insensitive mode
     #[arg(short='i')]
     casei: bool,
