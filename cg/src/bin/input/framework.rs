@@ -400,18 +400,18 @@ impl PartialOrd for Name {
             //Reminder; we *expect* entries to be diferrent.
             Name::Blank(i) => match &other {
                 Name::Blank(j) => i.partial_cmp(j),
-                Name::Long(_) => Some(std::cmp::Ordering::Less),
-                Name::Short(_) => Some(std::cmp::Ordering::Less),
+                Name::Long(_) => Some(std::cmp::Ordering::Greater),
+                Name::Short(_) => Some(std::cmp::Ordering::Greater),
                 _ => None,
             },
             Name::Long(s) => match &other {
-                Name::Blank(_) => Some(std::cmp::Ordering::Greater),
+                Name::Blank(_) => Some(std::cmp::Ordering::Less),
                 Name::Long(t) => s.partial_cmp(t),
                 Name::Short(_) => Some(std::cmp::Ordering::Greater),
                 _ => None,
             },
             Name::Short(c) => match &other {
-                Name::Blank(_) => Some(std::cmp::Ordering::Greater),
+                Name::Blank(_) => Some(std::cmp::Ordering::Less),
                 Name::Long(_) => Some(std::cmp::Ordering::Less),
                 Name::Short(d) => c.partial_cmp(d),
                 _ => None,
@@ -427,27 +427,27 @@ impl Ord for Name {
         match &self {
             Name::Blank(i) => match &other {
                 Name::Blank(j) => i.cmp(j),
-                Name::Long(_) => std::cmp::Ordering::Less,
-                Name::LongC(_) => std::cmp::Ordering::Less,
-                Name::Short(_) => std::cmp::Ordering::Less,
+                Name::Long(_) => std::cmp::Ordering::Greater,
+                Name::LongC(_) => std::cmp::Ordering::Greater,
+                Name::Short(_) => std::cmp::Ordering::Greater,
                 Name::Undefined => std::cmp::Ordering::Less,
             },
             Name::Long(s) => match &other {
-                Name::Blank(_) => std::cmp::Ordering::Greater,
+                Name::Blank(_) => std::cmp::Ordering::Less,
                 Name::Long(t) => s.cmp(t),
                 Name::LongC(t) => s.cmp(&t.to_string()),
                 Name::Short(_) => std::cmp::Ordering::Greater,
                 Name::Undefined => std::cmp::Ordering::Less,
             },
             Name::LongC(s) => match &other {
-                Name::Blank(_) => std::cmp::Ordering::Greater,
+                Name::Blank(_) => std::cmp::Ordering::Less,
                 Name::Long(t) => s.cmp(&t.as_str()),
                 Name::LongC(t) => s.cmp(t),
                 Name::Short(_) => std::cmp::Ordering::Greater,
                 Name::Undefined => std::cmp::Ordering::Less,
             },
             Name::Short(c) => match &other {
-                Name::Blank(_) => std::cmp::Ordering::Greater,
+                Name::Blank(_) => std::cmp::Ordering::Less,
                 Name::Long(_) => std::cmp::Ordering::Less,
                 Name::LongC(_) => std::cmp::Ordering::Less,
                 Name::Short(d) => c.cmp(d),
