@@ -1,7 +1,0 @@
-paradigm run interpreted
-paradigm arch any
-paradigm extension "hazel4"
-paradigm separator symbol op " " // separators need work
-//the. when the. she. when she. the
-paradigm separator instruction "\n"
-paradigm ignore whitespace

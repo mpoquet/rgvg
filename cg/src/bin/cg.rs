@@ -1,3 +1,5 @@
+use std::process::{exit};
+
 use clap::Parser;
 
 //use crate::input;
@@ -44,12 +46,25 @@ fn search(args: input::Args) {
     let q = g.populate(&args);
     //println!("{:?}", q);
     let p = g.generate(q);
-    println!("{:?}", p);
+    if args.dry {
+        println!("{} {}", p.0, p.1.iter().map(|s| String::from("\"".to_owned() + s + "\"")).collect::<Vec<String>>().join(" "));
+        return;
+    }
     let r = common::command::call(p).unwrap();
+    if !r.status.success() { 
+        if r.stderr.len() == 0 {
+            println!("No matches.");
+            return;
+            //eprintln!("Command failed without error string. It is likely that it could not parse your regular expression.");
+        } else {
+            eprintln!("{}", &String::from_utf8(r.stderr).expect("Invalid utf-8 in error string"));
+            exit(1)
+        }
+    }
     //let stop = std::time::Instant::now();
 
     //println!("t1: {:?}", stop - start);
-    let s = &String::from_utf8(r.stdout).unwrap();
+    let s = &String::from_utf8(r.stdout).expect("Invalid utf-8 in output string");
     //let stop = std::time::Instant::now();
     //println!("t2: {:?}", stop - start);
     let result = match &args.order_results {

@@ -143,19 +143,7 @@ pub fn open_last() -> Option<(PathBuf, Vec<Match>)> {
 
 #[allow(dead_code)]
 pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
-    let curpwd = std::env::current_dir().expect("Could not find current directory");
-    let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
-        true => "this directory",
-        false => match pwd.to_str() {
-            Some(s) => s,
-            None => "{unprintable_string}",
-        },
-    };
-    if color {
-        println!("Within \x1b[35m{}\x1b[39m:", p);
-    } else {
-        println!("Within {}:", p);
-    }
+    display_head(pwd, color);
     if color {
         let mut i = 0;
         for m in result {
@@ -183,12 +171,13 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
 pub fn display_head(pwd: PathBuf, color: bool) {
     let curpwd = std::env::current_dir().expect("Could not find current directory");
     let p = match pwd.as_os_str().len() == 0 || pwd == curpwd {
-        true => "this directory",
+        true => "",
         false => match pwd.to_str() {
             Some(s) => s,
             None => "{unprintable_string}",
         },
     };
+    if p.len() == 0 { return; }
     if color {
         println!("Within \x1b[35m{}\x1b[39m:", p);
     } else {

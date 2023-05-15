@@ -1,0 +1,13 @@
+Ajouts et modifications
+- La laine, les tapis et les lits déja colorés peuvent désormais être teints dans n’importe quelle autre couleur.
+
+Technique :
+- Ajout de nouveaux types de dégâts : outside_border et generic_kill
+  - Les joueurs situés à l’extérieur de la frontière du monde subissent désormais des dégâts de type outside_border au lieu de in_wall.
+  - L’élimination forcée d’une entité à l’aide de la commande /kill utilise désormais le type de dégâts generic_kill au lieu de out_of_world.
+- Les séquences aléatoires des tables de butin sont désormais déterminées.
+  - Le jeu utilise désormais des séquences aléatoires nommées pour produire de manière déterministe du butin pour les tables de butin. Chaque séquence aléatoire produit une séquence unique basée sur la graine du monde et l’identifiant de la séquence, ce qui signifie qu’une table de butin produira les mêmes résultats lorsqu’elle sera exécutée avec les mêmes paramètres dans le même monde.
+    - L’identifiant de la séquence aléatoire à utiliser pour une table de butin est spécifiée dans un nouveau champ appelé random_sequence.
+- Des changements ont été effectués dans l’encodage du fichier server.properties
+  - Le fichier est désormais lu en UTF-8, avec l’encodage précédent (ISO 8859-1/Latin 1) comme solution de repli.
+  - Le fichier est maintenant écrit avec l’encodage UTF-8

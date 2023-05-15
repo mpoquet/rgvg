@@ -1,0 +1,25 @@
+Ajouts et modifications :
+- Refonte globale du tri et du contenu des onglets de l’inventaire créatif
+  - Un même élément peut maintenant être dans plusieurs onglets à la fois.
+  - Suppression des onglets « Blocs décoratifs », « Moyens de transport », « Outils », « Nourriture », « Potions » et « Divers ».
+  - Ajout de l’onglet « Blocs colorés » qui contiens tous les blocs possédant diverses variantes de couleurs.
+    - Ces blocs ne sont plus présents dans l’onglet « Blocs de construction » pour en réduire la taille.
+  - Ajout de l’onglet « Blocs naturels » qui regroupe les blocs qui se gênèrent naturellement et/ou sont issues de la faune et la flore.
+  - Ajout de l’onglet « Blocs fonctionnels » qui regroupe les blocs avec une fonction particuliere comme des lampes ou des conteneurs.
+  - Ajout de l’onglet « Outils et utilitaire » qui regroupe les outils, les moyens de transports, les disques de musiques et d’autres objets utiles.
+  - Ajout de l’onglet « Nourriture et Boissons » qui regroupe les divers aliments et les differentes potions.
+  - Ajout de l’onglet « Ingrédients » qui regroupe les objets qui servent a la fabrication, au brassage ou a l’enchantement.
+  - Ajout de l’onglet « Œufs d’apparition » qui regroupe le générateur de monstres et tous les œufs d’apparition.
+  - Ajout d’un onglet caché, nommé « Utilitaires d’opérateur », qui regroupe les éléments réservés aux opérateurs comme les blocs de commande ou les différents niveaux de blocs de lumière.
+    - Pour voir cet onglet, il faut l’activer dans le menu « Contrôles » (désactivé par défaut) et avoir les autorisations requises (activation de la triche, être opérateur sur serveur).
+  - L’onglet « Blocs de construction » est mieux ordonné et comprend maintenant les murets, barriéres, portillons, plaques de pressions, boutons, portes et trappes.
+  - L’onglet « Redstone » à été renommé en « Blocs de redstone » et est maintenant trié en fonction des utilisations.
+    - Les variantes des boutons, plaques de pressions, portes, trappes et bateaux qui ne présentent aucune différence niveau fonctionnalités ne sont plus présents.
+  - Toutes les haches sont maintenant présentes dans l’onglet « Combat ».
+  - Les feux d’artifices de chaque durée sont maintenant présents dans l’inventaire créatif (dans « Combat » et « Outils et utilitaires »).
+  - Les soupes suspectes dont les effets sont disponibles via la fabrication ou les champimeuhs sont maintenant présents dans l’inventaire créatif (dans « Nourriture et Boissons »).
+  - L’onglet de recherche présente désormais les objets de manière séquentielle, regroupés par les autres onglets.
+    - Par exemple, les objets trouvés dans « Blocs de construction » apparaîtront toujours avant les éléments de « Blocs de redstone« .
+  - La dalle de chêne pétrifiée n’est plus présente dans l’inventaire créatif. Elle est maintenant disponible que via les commandes.
+  - Les infobulles de tous les objets de l’inventaire créatif, en dehors des onglets à catégorie unique, indiquent les catégories dans lesquelles l’objet se trouve.
+    - Auparavant, cela ne se produisait que dans l’onglet « Recherche » .

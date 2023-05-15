@@ -1,0 +1,29 @@
+New Features in 1.19.3
+- Some experimental features are now available through built-in experimental datapacks
+- Added a new "Panorama Scroll Speed" accessibility option
+- Added new default skins for offline players
+- New wood sounds
+
+Sounds
+- Various wood types now have unique sounds when placed, broken, or walked on
+  - There are three sets of unique sounds: Overworld wood types, Nether wood types, and Bamboo (when enabled)
+- Step sounds can now be heard when walking on Carpets, Lily Pads and Small Amethyst Buds
+- Step sounds can now be heard when walking through Nether sprouts, Glow lichen, Crimson Roots and Warped Roots
+
+Changes in 1.19.3
+- Reworked the Creative Inventory tabs
+- Added Operator Items Tab option in the Controls menu which is off by default
+- The Vex now has a new look
+- In the Nether dimension Endermen, Skeletons and Wither Skeletons now only spawn at light level 7 and below (instead of 11 and below)
+- Changes to block support
+- Spawner block changes
+- Changes to chat
+- Added Draft Player Reports
+- Improvements to the Open to LAN screen
+- The Realms News button will now show a confirmation screen before opening the link
+- Stronghold placement code has been changed to be more efficient, causing stronghold positions to shift
+  - They are still placed in concentric rings, but their positions in the rings may change by a few degrees
+- "Teleport to Team Member" option in spectator menu now only shows up for teams with viable target players
+- Changes to tooltips
+- The Wild update music has been tweaked to be slightly less loud
+

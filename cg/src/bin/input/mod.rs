@@ -21,6 +21,9 @@ pub struct Args {
     /// Color mode
     #[arg(long, default_value="yes")]
     pub color: String,
+    /// Dry run - Prints command instead of running them.
+    #[arg(long,short='n')]
+    pub dry: bool,
     /// Order results alphabeticacally according to file name, line number, and line number
     #[arg(long,short)]
     pub order_results: bool,
@@ -41,7 +44,7 @@ pub struct Args {
     exclude_files: Vec<String>,
     /// Globs d'inclusion
     #[arg(long)]
-    include_dir: Vec<String>,
+    include_dir: Vec<String>, //todo!
     /// Globs d'exclusion
     #[arg(long)]
     exclude_dir: Vec<String>,

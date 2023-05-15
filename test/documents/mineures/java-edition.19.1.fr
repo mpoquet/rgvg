@@ -1,0 +1,20 @@
+Ajouts et modifications :
+- Les Allays dansent proche d’un Bloc Musical diffusant de la musique.
+- Ajout d’une fonctionnalité qui permet de dupliquer les Allays :
+  - S’il porte un Cristal d’améthyste pendant qu’il danse, un second Allay apparaîtra.
+    - La duplication a un temps de recharge de 5 minutes.
+
+- Les Catalyseur de sculk lachent désormais 5 d’XP au lieu de 20.
+
+- Il est maintenant possible de signaler un joueur qui envoie des messages abusifs dans le chat du jeu.
+  - Celui qui signale doit sélectionner les messages de chat individuels qui contiennent le contenu répréhensible, ainsi que la catégorie du rapport, afin de fournir le meilleur contexte possible à l’équipe de modération pour agir.
+    - Accessible via l’écran des interactions sociales (le raccourci clavier par défaut est P).
+      - L’écran des interactions sociales est désormais accessible via l’écran Pause lors d’une partie multijoueur.
+    - Plusieurs messages de chat peuvent être sélectionnés pour être rapportés
+    - La catégorie du signalement peut être sélectionnée dans une liste de catégories de rapport de chat.
+    - Des commentaires supplémentaires peuvent être saisis pour fournir plus de détails et d’informations sur le rapport.
+
+Techniques
+- L’événement de clic run_command pour les composants textuels ne prend plus en charge l’envoi direct de messages de chat.
+  - Seules les commandes sont prises en charge. Il convient donc d’utiliser une commande telle que /say à la place.
+  - Cela signifie que les valeurs doivent désormais toujours être préfixées par ‘/’.

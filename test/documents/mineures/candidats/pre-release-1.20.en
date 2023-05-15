@@ -1,0 +1,12 @@
+Changes
+- Colored Wool, Carpets and Beds can now be dyed to any other color
+
+Technical Changes
+- Added new damage types: outside_border and generic_kill
+- Random sequences for loot tables are now deterministic
+- Changes in server.properties encoding
+- string data sources for the data command now accept negative boundaries, which are interpreted as index counted from the end of the string
+
+Damage Types
+- Players outside the world border are now hurt by the damage type outside_border instead of in_wall
+- Forcibly removing an entity using i.e. the /kill command now uses damage type generic_kill instead of out_of_world

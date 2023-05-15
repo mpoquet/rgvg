@@ -1,0 +1,3 @@
+Fixed Bugs in 1.19.2
+- Fixed an issue causing players to get disconnected with secure chat
+- Fixed a crash in the social interactions screen

@@ -54,7 +54,7 @@ pub const GREP: Grepper = Grepper {
     include_dir: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
-        target_name: Name::LongC("include-dir"),
+        target_name: Name::LongC("include"),
         target_type: Argument::CollectionText(None),
     },
     exclude_dir: Entry {
@@ -64,7 +64,7 @@ pub const GREP: Grepper = Grepper {
         target_type: Argument::CollectionText(None),
     },
     default_args:  "-Hnr",
-    command: "grep",
+    command: "ggrep",
 };
 
 pub const RIPGREP: Grepper = Grepper {
