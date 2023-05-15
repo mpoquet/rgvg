@@ -7,6 +7,3 @@
 6 ./test/documents/mineures/snapshots/23w17a.en 48   - Active: 40 game ticks for Sculk Sensors and 20 game ticks for Calibrated Sculk Sensors
 7 ./test/documents/mineures/snapshots/23w17a.en 49   - Cooldown: 1 game tick for both types of Sculk Sensors
 8 ./test/documents/mineures/snapshots/23w17a.en 50 - These phase timings were tweaked so that it is less common for activated contraptions to recursively activate the Sculk Sensor that powered them
-9 ./test/documents/the-wild-update.19.en 5 - Sneak 100 — Sneaking next to a Sculk Sensor without triggering it
-10 ./test/documents/the-wild-update.19.en 41 - The sculk sensor is a redstone block that detects vibrations, so walk carefully or use a wool block to muffle your steps
-11 ./test/documents/the-wild-update.19.en 48 - Quick movements risk setting off a sculk sensor that trigger a sculk shrieker

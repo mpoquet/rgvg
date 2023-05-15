@@ -11,3 +11,5 @@ Technique :
 - Des changements ont été effectués dans l’encodage du fichier server.properties
   - Le fichier est désormais lu en UTF-8, avec l’encodage précédent (ISO 8859-1/Latin 1) comme solution de repli.
   - Le fichier est maintenant écrit avec l’encodage UTF-8
+
+Ajouté le Sculk Sensor

@@ -12,7 +12,7 @@ results = "./test/results/"
 source_comp = "./test/source.txt"
 
 def run(command:str):
-    print("$\x1b[30m", command, "\x1b[39m")
+    #print("$\x1b[30m", command, "\x1b[39m")
     a = subprocess.run(command, shell=True)
     return a
 def q_run(command:str):
@@ -22,18 +22,21 @@ def q_run(command:str):
 def compare(command:str, result_file:str):
     c = run(command + " > " + source_comp)
     c = q_run("diff " + source_comp + " " + results + result_file)
-    if len(c.stderr): print(str(c.stderr))
     if c.returncode:
         print("\x1b[31mFailed\x1b[39m")
     else: print("\x1b[32mSucceeded\x1b[39m")
+    if len(c.stderr): print(str(c.stderr))
+    return c.returncode != 0;
 
 def cg_test_with_tool(tool: str, option_count:str):
     print('\x1b[1mRunning tests for\x1b[34m', tool + '\x1b[39m...\x1b[0m')
     cmd = "./cg/target/release/cg " + order_flag + " --color=no " #We must assume that -o and color function as stated
     cmd += "--tool=" + tool
+    d = 0
     for c in option_count:
         print("Running suite", c + "...")
-        cgsuites[int(c)](cmd)
+        d += cgsuites[int(c)](cmd)
+    return d
 
 basic_pattern = "Sculk Sensor"
 basic_dir = documents[:len(documents)-1] #grep doesont like trailing slashes
@@ -48,44 +51,44 @@ def cg_suite_0(cmd: str):
     cmds.append((cmd + " '" + basic_pattern + "' '" + basic_dir + "' ", "basic_pattern.re"))
     cmds.append((cmd + " '" + other_pattern + "' '" + other_dir + "' ", "other_pattern.re"))
     cmds.append((cmd + " '" + complex_pattern + "' '" + complex_dir + "' ", "advanced_pattern.re"))
-
+    d = 0
     for i in cmds:
         print(">\x1b[30m", i[1], "\x1b[39m", end=" ")
-        compare(i[0], i[1])
+        d += compare(i[0], i[1])
         print(">\x1b[30m", "i_" + i[1], "\x1b[39m", end=" ")
-        compare(i[0] + "-i", "i_" + i[1])
+        d += compare(i[0] + "-i", "i_" + i[1])
+    return d
 
 superags = [
-    ("--include-files='*.19.en'","if"),
-    ("--include-dir='snapshots'","id"),
-    ("--exclude-files='*.19.en'","ef"),
+    ("--include-files='*.??.en'","if"),
+    ("--include-dir='snapshots'","id"), #include-dir is fucked up :(
+    ("--exclude-files='*.??.en'","ef"),
     ("--exclude-dir='snapshots'","ed"),
 ]
 def cg_suite_1(cmd: str):
-    #Basic tests
-
-    j = 0
+    d = 0
     for i in superags:
         cd = cmd + " '" + basic_pattern + "' '" + basic_dir + "' " + i[0]
         fd = i[1] + "_mono_pattern_basic.re"
-        j+=1
         print(">\x1b[30m", fd, "\x1b[39m", end=" ")
-        compare(cd, fd)
+        d += compare(cd, fd)
+    return d
 
+superags2 = [
+    ("--include-files='*.20.*'","if"),
+    ("--include-dir='candidats'","id"), #include-dir is fucked up :(
+    ("--exclude-files='*.20.*'","ef"), #exclude-file with include is borken with classic grep
+    ("--exclude-dir='candidats'","ed"),
+]
 def cg_suite_2(cmd: str):
-    #Basic tests
-    cmds = []
-    cmds.append((cmd + " '" + basic_pattern + "' '" + basic_dir + "' ", "basic_pattern.re"))
-    cmds.append((cmd + " '" + other_pattern + "' '" + other_dir + "' ", "other_pattern.re"))
-    cmds.append((cmd + " '" + complex_pattern + "' '" + complex_dir + "' ", "advanced_pattern.re"))
-
-    j = 0
-    for i in cmds:
-        j+=1
-        print(">\x1b[30m", i[1], "\x1b[39m", end=" ")
-        compare(i[0], i[1])
-        print(">\x1b[30m", "i_" + i[1], "\x1b[39m", end=" ")
-        compare(i[0] + "-i", "i_" + i[1])
+    d = 0
+    for i in superags:
+        for j in superags2:
+            cd = cmd + " '" + basic_pattern + "' '" + basic_dir + "' " + i[0] + " " + j[0]
+            fd = i[1] + j[1] + "_mono_pattern_basic.re"
+            print(">\x1b[30m", fd, "\x1b[39m", end=" ")
+            d += compare(cd, fd)
+    return d
 
 cgsuites = [cg_suite_0, cg_suite_1,  cg_suite_2]
 
@@ -114,10 +117,15 @@ if run("cargo build --manifest-path=./cg/Cargo.toml --release -q").returncode:
 else: print("\x1b[32mBuild successfull.\x1b[39m")
 
 if tool == 'all':
+    d = 0
     for c in tool_list:
-        cg_test_with_tool(c,option_count)
+        d += cg_test_with_tool(c,option_count)
+    if d > 0: print("\x1b[33mFailed", d, "tests.\x1b[39m")
+    else: print("\x1b[32mAll tests successfull.\x1b[39m")
 elif tool in tool_list:
-    cg_test_with_tool(tool,option_count)
+    d = cg_test_with_tool(tool,option_count)
+    if d > 0: print("\x1b[33mFailed", d, "tests.\x1b[39m")
+    else: print("\x1b[32mAll tests successfull.\x1b[39m")
 else:
     print("\x1b[31mInvalid tool name:\x1b[39m", tool)
 

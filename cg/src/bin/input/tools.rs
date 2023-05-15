@@ -24,7 +24,6 @@ pub struct Grepper {
     command: &'static str,
 }
 
-///todo!
 pub const GREP: Grepper = Grepper {
     regex_pattern: Entry { 
         defaults_to: DefaultValue::Mandatory,
@@ -64,7 +63,7 @@ pub const GREP: Grepper = Grepper {
         target_type: Argument::CollectionText(None),
     },
     default_args:  "-Hnr",
-    command: "ggrep",
+    command: "grep",
 };
 
 pub const RIPGREP: Grepper = Grepper {

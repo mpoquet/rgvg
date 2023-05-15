@@ -10,3 +10,5 @@ Technical Changes
 Damage Types
 - Players outside the world border are now hurt by the damage type outside_border instead of in_wall
 - Forcibly removing an entity using i.e. the /kill command now uses damage type generic_kill instead of out_of_world
+
+Added Sculk Sensor

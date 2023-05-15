@@ -2,4 +2,3 @@
 **/.vscode
 test/benchmarks/**
 !test/benchmarks/install.sh
-test/source.txt
