@@ -43,7 +43,7 @@ impl Restrict<&str> for String {
 }
 
 fn strip(text: &str) -> String {
-    let r = Regex::new(r"\u{1b}\[([0-9;]*)[a-zA-Z]").unwrap();
+    let r = Regex::new(r"(^ *|\u{1b}\[([0-9;]*)[a-zA-Z])").unwrap();
     return r.replace_all(text, "").to_string();
 }
 
