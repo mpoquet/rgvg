@@ -149,7 +149,7 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
         for m in result {
             match i%2 {
                 0 => println!("\x1b[31m{}\x1b[39m {}", i, m.disp()),
-                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", i, m.disp()),
+                1 => println!("\x1b[1m\x1b[31m{}\x1b[39m {}\x1b[0m", i, m.disp()),
                 _ => panic!("CPU borken :("),
             };
             i+=1;
@@ -191,7 +191,7 @@ pub fn display_once(result: &Match, color: bool) {
         if color {
             match I%2 {
                 0 => println!("\x1b[31m{}\x1b[39m {}", I, result.disp()),
-                1 => println!("\x1b[31m{}\x1b[39m \x1b[1m{}\x1b[0m", I, result.disp()),
+                1 => println!("\x1b[1m\x1b[31m{}\x1b[39m {}\x1b[0m", I, result.disp()),
                 _ => panic!("CPU borken :("),
             };
             I+=1;
