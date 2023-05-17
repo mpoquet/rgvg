@@ -27,6 +27,9 @@ pub struct Args {
     /// Order results alphabeticacally according to file name, line number, and line number
     #[arg(long,short)]
     pub order_results: bool,
+    /// Remove leading space
+    #[arg(long)]
+    pub remove_leading: bool,
     /// The regular expression used for searching.
     #[arg(value_name="PATTERN")]
     pub regex_pattern: Option<String>,

@@ -42,8 +42,11 @@ impl Restrict<&str> for String {
     }
 }
 
-fn strip(text: &str) -> String {
-    let r = Regex::new(r"(^ *|\u{1b}\[([0-9;]*)[a-zA-Z])").unwrap();
+fn strip(text: &str, strip: bool) -> String {
+    let r = match strip {
+        false => Regex::new(r"\u{1b}\[([0-9;]*)[a-zA-Z]").unwrap(),
+        true => Regex::new(r"(^ *|\u{1b}\[([0-9;]*)[a-zA-Z])").unwrap(),
+    };
     return r.replace_all(text, "").to_string();
 }
 
@@ -64,7 +67,7 @@ fn create_outputformat(format: OutputFormat) -> Regex {
 }
 
 #[allow(dead_code)]
-pub fn read(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
+pub fn read(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Match> {
     let r = create_outputformat(format);
     let mut matches = Vec::new();
 
@@ -73,7 +76,7 @@ pub fn read(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
             matches.push(Match {
                 filename: String::restrict(&m[1], NAME_LEN),
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
-                matched: String::restrict(strip(&m[3]).as_str(), MATCH_LEN),
+                matched: String::restrict(strip(&m[3], stp).as_str(), MATCH_LEN),
             });
             //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
@@ -91,7 +94,7 @@ pub fn read(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
     return matches;
 }
 
-pub fn read_display(format: OutputFormat, text: &str, color: bool) -> Vec<Match> {
+pub fn read_display(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Match> {
     common::display_head(PathBuf::new(), color);
     let r = create_outputformat(format);
     let mut matches = Vec::new();
@@ -101,7 +104,7 @@ pub fn read_display(format: OutputFormat, text: &str, color: bool) -> Vec<Match>
             let m = Match {
                 filename: String::restrict(&m[1], NAME_LEN),
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
-                matched: String::restrict(strip(&m[3]).as_str(), MATCH_LEN),
+                matched: String::restrict(strip(&m[3], stp).as_str(), MATCH_LEN),
             };
             common::display_once(&m, color);
             matches.push(m);

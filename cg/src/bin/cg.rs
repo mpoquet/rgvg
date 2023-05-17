@@ -68,9 +68,9 @@ fn search(args: input::Args) {
     //let stop = std::time::Instant::now();
     //println!("t2: {:?}", stop - start);
     let result = match &args.order_results {
-        false => output::read_display(output::picker(&tool), s, color),
+        false => output::read_display(output::picker(&tool), s, color, args.remove_leading),
         true => {
-            let mut r = output::read(output::picker(&tool), s, color);
+            let mut r = output::read(output::picker(&tool), s, color, args.remove_leading);
             r.sort();
             output::display(&r, color);
             r
