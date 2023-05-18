@@ -15,8 +15,7 @@ emacs: emacs +{line} {file}";
 #[command(author = "SliceOfArdath", version, about = "Open code, fast.", long_about = None)]
 #[command(group(ArgGroup::new("use").args(["tool"]).requires("id")))]
 #[command(group(ArgGroup::new("existing").args(["new_tool"]).conflicts_with_all(["use", "list_tools"])))]
-#[command(group(ArgGroup::new("id").args(["id"]).conflicts_with_all(["new_tool", "list_tools"])))]
-
+#[command(group(ArgGroup::new("ids").args(["id"]).conflicts_with_all(["new_tool", "list_tools"])))]
 pub struct Args {
     /// The regular expression used for searching.
     #[arg(value_name="ID")]
