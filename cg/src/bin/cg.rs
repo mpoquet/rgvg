@@ -57,7 +57,7 @@ fn search(args: input::Args) {
             return;
             //eprintln!("Command failed without error string. It is likely that it could not parse your regular expression.");
         } else {
-            eprintln!("{}", &String::from_utf8(r.stderr).expect("Invalid utf-8 in error string"));
+            eprint!("{}", &String::from_utf8(r.stderr).expect("Invalid utf-8 in error string"));
             exit(1)
         }
     }
