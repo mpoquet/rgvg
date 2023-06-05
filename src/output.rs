@@ -6,21 +6,13 @@ use regex::Regex;
 
 type Item = (usize, &'static str, &'static str);
 
-//rg the ./documents --color=always --line-number -H --no-heading
-//ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
-//ugrep the ./documents -rn --color=always
-
 pub struct OutputFormat {
     /// The filename.
     filename: Item,
     /// Display line number.
     line: Item,
-    /// Display global position in file. Points to the start of the line matched.
-    // char: Item,
     /// The matched LINE itself.
     matched: Item,
-    //// True if the matched STRING is highlighted. If false, finding the column (of the first matched string) will require running a regex search.
-    // is_match_highlighted: bool,
 }
 
 trait Restrict<T> {
@@ -84,7 +76,6 @@ pub fn read(format: OutputFormat, text: &str, color: bool, stp: bool) -> Vec<Mat
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
                 matched: String::restrict(strip(&m[3], stp).as_str(), MATCH_LEN),
             });
-            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
     } else {
         for m in r.captures_iter(text) {
@@ -93,7 +84,6 @@ pub fn read(format: OutputFormat, text: &str, color: bool, stp: bool) -> Vec<Mat
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
                 matched: String::restrict(&m[3], MATCH_LEN),
             });
-            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
     }
 
@@ -114,7 +104,6 @@ pub fn read_display(format: OutputFormat, text: &str, color: bool, stp: bool) ->
             };
             crate::common::display_once(&m, color);
             matches.push(m);
-            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
     } else {
         for m in r.captures_iter(text) {
@@ -125,14 +114,12 @@ pub fn read_display(format: OutputFormat, text: &str, color: bool, stp: bool) ->
             };
             crate::common::display_once(&m, color);
             matches.push(m);
-            //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
     }
 
     return matches;
 }
 
-///todo! voir le cout performance de la couleur
 pub const GREP: OutputFormat = OutputFormat {
     filename: (0, "", ""),
     line: (1, ":", ":"),
@@ -188,7 +175,6 @@ fn header() -> Vec<u8> {
 }
 
 pub fn write(result: &Vec<Match>) {
-    //println!("Writing to \x1b[35m*${{HOME}}/.rgvg_last\x1b[39m...");
     let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
     let v = v.concat();
     let mut s: Vec<u8> = header();

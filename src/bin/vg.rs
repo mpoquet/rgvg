@@ -31,10 +31,6 @@ pub struct Args {
     list_tools: bool,
 }
 
-// vscode: code -g {file}:{line}
-// pico: pico +{line} {file}
-// nano: nano +{line} {file}
-
 ///tool definition format:
 ///{tool_name}: [string] where [string] is any string containing the substrings {line} and {file}
 fn get_tool(tool_list: Vec<&str>, tool: String) -> String {

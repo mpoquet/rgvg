@@ -271,11 +271,6 @@ pub mod command {
             .spawn()
             .expect("Command could not be executed.");
     }
-    /// Links the first command's ouput to the second's input, then starts the second command.
-    /*fn link(first: Child, command: String, args: Vec<String>) -> Child {
-        //first.stdout(Stdio::piped());
-        return build(command,args).stdin(first.stdout.unwrap()).stdout(Stdio::piped()).spawn().expect("Failed command");
-    }*/
     ///Finishes a call stack
     fn finish(last: Child) -> Result<Output, std::io::Error> {
         return last.wait_with_output(); //todo!

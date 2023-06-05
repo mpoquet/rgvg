@@ -167,7 +167,7 @@ impl Convertible<Args> for Grepper {
     ///   Try to know where each element will be.
     ///   As a rule of thumb, we'd rather want elements with names to be placed later.
     ///   Not that this would matter that much, usually!
-    ///   
+    ///
     ///   What we do here, is log which arguments have a fixed position,
     ///     then throw all the non-ordered ones after.
     ///   To optimize the whole thing, we generate the arguments in the same time;
