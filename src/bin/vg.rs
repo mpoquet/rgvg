@@ -2,7 +2,6 @@ use clap::{Parser, command, ArgGroup};
 use std::io::Write;
 use regex::Regex;
 
-mod common;
 
 const TOOLS: &'static str = 
 r"vscode: code -g {file}:{line}
@@ -47,7 +46,7 @@ fn get_tool(tool_list: Vec<&str>, tool: String) -> String {
 }
 
 fn open(tool_list: String, id: usize, tool: String) {
-    let (mut r,s) = common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    let (mut r,s) = rgvg::common::open_last().expect("No last file for user! Use 'cg' to create a last file.");
     let request = s.get(id).expect("Delivered id was not valid! Valid IDs range between 0..MAX_ID.");
 
     r.push(request.filename.clone());
@@ -62,10 +61,10 @@ fn open(tool_list: String, id: usize, tool: String) {
     
     let c = (t.get(0).expect("Could not find executable!").to_string(), t[1..].to_vec());
 
-    common::command::blind_call(c).expect("An error occured opening in your target editor.");
+    rgvg::common::command::blind_call(c).expect("An error occured opening in your target editor.");
 }
 fn add_tool(nt: String) {
-    let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
+    let h = home::home_dir().expect("Could not find home dir.").join(rgvg::common::OPEN_FORMAT_PATH);
         if !h.exists() {
             std::fs::write(h, TOOLS.to_owned() + &nt + "\n").expect("Could not create tool registry in your home directory!")
         } else if h.is_file() {
@@ -78,7 +77,7 @@ fn add_tool(nt: String) {
 fn main() {
     let r = Args::parse();
 
-    let h = home::home_dir().expect("Could not find home dir.").join(common::OPEN_FORMAT_PATH);
+    let h = home::home_dir().expect("Could not find home dir.").join(rgvg::common::OPEN_FORMAT_PATH);
     let s = std::fs::read_to_string(h).unwrap_or(TOOLS.to_owned());
     match r.id {
         Some(id) => open(s, id, r.tool),
@@ -91,7 +90,7 @@ fn main() {
                         println!("{}", &t[1]);
                     }
                 },
-                false => common::last(common::color(&r.color)),
+                false => rgvg::common::last(rgvg::common::color(&r.color)),
             }
         }
     }

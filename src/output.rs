@@ -1,6 +1,6 @@
 use std::{path::PathBuf};
 
-use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH, self};
+use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH};
 
 use regex::Regex;
 
@@ -95,7 +95,7 @@ pub fn read(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Matc
 }
 
 pub fn read_display(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Match> {
-    common::display_head(PathBuf::new(), color);
+    crate::common::display_head(PathBuf::new(), color);
     let r = create_outputformat(format);
     let mut matches = Vec::new();
 
@@ -106,7 +106,7 @@ pub fn read_display(format: OutputFormat, text: &str, color: bool, stp:bool) -> 
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
                 matched: String::restrict(strip(&m[3], stp).as_str(), MATCH_LEN),
             };
-            common::display_once(&m, color);
+            crate::common::display_once(&m, color);
             matches.push(m);
             //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }
@@ -117,7 +117,7 @@ pub fn read_display(format: OutputFormat, text: &str, color: bool, stp:bool) -> 
                 line: m[2].parse().expect("Unreadable line number"), //&("Unreadable line number".to_owned() + &m[0])
                 matched: String::restrict(&m[3], MATCH_LEN),
             };
-            common::display_once(&m, color);
+            crate::common::display_once(&m, color);
             matches.push(m);
             //println!("{} {}", matches.last().unwrap().matched.0.len(), matches.last().unwrap().matched);
         }

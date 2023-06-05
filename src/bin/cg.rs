@@ -2,13 +2,6 @@ use std::process::{exit};
 
 use clap::Parser;
 
-//use crate::input;
-
-mod input;
-mod output;
-mod common;
- 
-
 ///Creates a command from a command string.
 /*fn build(command: Vec<&str>) -> Command {
     let mut output = Command::new(command.get(0).expect("No command attached!"));
@@ -23,7 +16,7 @@ mod common;
 // Format stdout facile a lire avec grep
 
 
-use crate::input::framework::Convertible;
+use rgvg::input::framework::Convertible;
 
 /*fn rc<'a>(cap: &Option<regex::Match<'a>>) -> &'a str {
     match cap {
@@ -38,11 +31,11 @@ use crate::input::framework::Convertible;
     }
 }*/
 
-fn search(args: input::Args) {
+fn search(args: rgvg::input::Args) {
     let tool = &args.tool;
-    let color = common::color(&args.color);
+    let color = rgvg::common::color(&args.color);
     //println!("{:?}", args);
-    let mut g = input::tools::picker(&tool);
+    let mut g = rgvg::input::tools::picker(&tool);
     let q = g.populate(&args);
     //println!("{:?}", q);
     let p = g.generate(q);
@@ -50,7 +43,7 @@ fn search(args: input::Args) {
         println!("{} {}", p.0, p.1.iter().map(|s| String::from("\"".to_owned() + s + "\"")).collect::<Vec<String>>().join(" "));
         return;
     }
-    let r = common::command::call(p).unwrap();
+    let r = rgvg::common::command::call(p).unwrap();
     if !r.status.success() { 
         if r.stderr.len() == 0 {
             println!("No matches.");
@@ -68,17 +61,17 @@ fn search(args: input::Args) {
     //let stop = std::time::Instant::now();
     //println!("t2: {:?}", stop - start);
     let result = match &args.order_results {
-        false => output::read_display(output::picker(&tool), s, color, args.remove_leading),
+        false => rgvg::output::read_display(rgvg::output::picker(&tool), s, color, args.remove_leading),
         true => {
-            let mut r = output::read(output::picker(&tool), s, color, args.remove_leading);
+            let mut r = rgvg::output::read(rgvg::output::picker(&tool), s, color, args.remove_leading);
             r.sort();
-            output::display(&r, color);
+            rgvg::output::display(&r, color);
             r
         }
     };
     //let stop = std::time::Instant::now();
     //println!("t3: {:?}", stop - start);
-    output::write(&result);
+    rgvg::output::write(&result);
     //let stop = std::time::Instant::now();
     //println!("t4: {:?}", stop - start);
 }
@@ -101,17 +94,17 @@ fn main() {
     /*let text = r"./documents/t.txt:1:haha [01;31m[Kthe[m[K ha
 ./documents/t.txt:2:elh[01;31m[Kthe[m[K:)
 ";
-    output::read(output::GREP, text);
+    rgvg::output::read(rgvg::output::GREP, text);
     let text = r"[0m[35m./documents/t.txt[0m:[0m[32m1[0m:haha [0m[1m[31mthe[0m ha
 [0m[35m./documents/t.txt[0m:[0m[32m2[0m:elh[0m[1m[31mthe[0m:)
 ";
-    output::read(output::RIPGREP, text);*/
+    rgvg::output::read(rgvg::output::RIPGREP, text);*/
 
     //let start = std::time::Instant::now();
-    let args = input::Args::parse();
+    let args = rgvg::input::Args::parse();
     match args.list_tools {
         false => match &args.regex_pattern {
-            None => common::last(common::color(&args.color)),
+            None => rgvg::common::last(rgvg::common::color(&args.color)),
             Some(_) => search(args)
         },
         true => {
