@@ -1,0 +1,11 @@
+New Advancements
+- The Power of Books : Read the power signal of a Chiseled Bookshelf using a Comparator
+
+Changes
+- For ease of use, the Smithing Table no longer requires a Smithing Template to be in the template slot before placing an itemstack into the other slots
+- Jukebox has been added to the Redstone Blocks creative tab
+
+Step Sounds
+- Walking on a block will now always play a step sound
+  - It was previously not the case if you were walking along the edge of a block with air or fluid besides it
+- Walking on the ocean floor will produce a step sound for the block you are walking on at a lower volume and pitch

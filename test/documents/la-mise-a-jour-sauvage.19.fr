@@ -1,0 +1,54 @@
+Ajouts et modifications
+Biomes
+- Ajout du biome des abîmes (« deep dark« ) qui se génère dans les profondeurs de l’Overworld.
+  - Il se génère exclusivement sous Y=0 même s’il peut techniquement s’étendre au-dessus.
+  - Il s’agit d’un biome très sinistre rempli de divers blocs de Sculk que nous verrons plus tard.
+  - Aucune créature n’apparaît naturellement dans les abîmes.
+
+- Ajout du marais à mangroves (« mangrove swamp« ), une nouvelle variante du marais.
+  - Il se génère dans des endroits chauds et humides, principalement proche des jungles et déserts.
+  - Le sol est recouvert d’une épaisse couche de Boue et des palétuviers s’y gênèrent en grande quantité.
+  - Contrairement aux marais traditionnels, les cabanes de sorcières ne peuvent pas s’y générer.
+  - Des poissons tropicaux apparaissent dans ce biome.
+
+- Ajout des anciennes cités
+  - Il s’agit d’une structure souterraine immense, qui apparaît dans les abîmes à la couche Y=-52, avec un immense cadre ouvert en son centre.
+    - Caché sous le cadre, on peut y retrouver divers mécanismes en Redstone.
+  - Elle est faite en différents blocs d’ardoise des abîmes, de basalte et en laine grise.
+    - On peut également y retrouver du sable des âmes, du feu des âmes, des lanternes des âmes, des bougies et des cranes de squelettes.
+  - Dans les coffres, gardés par des capteurs et des hurleurs, il est possible d’y trouver des potions de Régénération II, des livres enchantés, des houes enchantés, des pantalons enchantés, des pommes dorées enchantées ainsi que d’autres objets uniques que nous verrons plus tard dans l’article.
+    - Si un coffre est généré devant le cadre central, il contiendra toujours une Pomme dorée.
+  - Les monstres ne peuvent pas apparaître dans les anciennes cités.
+
+Blocs
+- Ajout de différents blocs de type Sculk, une nouvelle catégorie de blocs qui apparaît dans les abîmes :
+  - Ajout du capteur sculk au mode créatif.
+    - Il nécessite maintenant Toucher de soie pour être obtenu, sinon il laisse de l’XP.
+    - Il détecte les vibrations à 9 blocs ou moins.
+      - Ne détecte pas les vibrations sur un bloc de laine ou un tapis.
+      - Ne détecte pas les joueurs qui s’accroupissent.
+        - Il s’activera malgré tout si le joueur lui marche dessus, même s’il est accroupi.
+      - Réagit à la vibration la plus proche s’il en détecte plusieurs en même temps.
+  - Sculk
+    - Lorsque des blocs de laine sont placés dessus, les capteurs sculk situés à proximité le savent, ce qui empêche l’occlusion de la vibration.
+    - Requiert Toucher de soie pour être obtenu, sinon de l’XP est lâchée.
+    - Il remplit le sol des abîmes.
+  - Veines de sculk
+    - Comme le lichen lumineux, elles peuvent être placées dans n’importe quelle direction.
+    - Nécessitent Toucher de soie pour être obtenus.
+    - Les veines de sculk sont trouvables sur la bordure des parcelles de Sculk.
+  - Hurleur sculk
+    - Ils envoient un appel d’alerte lorsqu’ils reçoivent des vibrations venant de capteurs sculk, d’un joueur/d’une créature qui le piétine ou d’un signal Redstone.
+    - Donne aux joueurs l’effet « obscurité » lorsqu’il s’active.
+    - Lorsqu’un hurleur s’active, vous entendrez une réponse étrange au loin…
+    - Nécessite Toucher de soie pour être obtenus, sinon de l’XP est lâchée.
+  - Catalyseur de sculk
+    - Un bloc qui dégage des particules d’âmes lorsque les monstres meurent dans un rayon de 8 blocs.
+      - Les monstres qui périssent en présence du catalyseur ne lâcheront pas leur expérience. À la place, une charge sera créée à l’endroit où la créature a péri.
+        - La charge des monstres se répandra dans divers blocs de Sculk dans des directions aléatoires jusqu’à ce qu’ils trouvent un substrat valide qu’ils peuvent convertir en Sculk.
+          - La valeur de la charge est proportionnelle à la quantité d’XP que la créature aurait laissé tomber, et chaque fois qu’un bloc est converti en Sculk, il enlève 1 valeur à cette charge.
+          - Cette charge dans les blocs et les veines de Sculk finira par se désintégrer, mais beaucoup, beaucoup plus lentement à proximité du catalyseur de Sculk, et beaucoup plus rapidement loin de son hôte.
+            - Si la charge se désintègre à plus de 24 blocs du catalyseur elle disparaît.
+            - Si la charge se désintègre à plus de 4 blocs du catalyseur, elle a 90 % de chance de faire pousser un capteur sculk et 10 % de faire pousser un hurleur sculk.
+      - Nécessite Toucher de soie pour être obtenus, sinon de l’XP est lâchée.
+      - Un catalyseur est lâché à la mort d’un Warden.

@@ -1,0 +1,36 @@
+Features
+- Added Allay Duplication
+- Tweaked Sculk Catalysts
+- Added Chat Trust status
+- New Options for Chat Preview
+- Added Player Reporting
+
+Allay
+- Allays will dance to a Record playing in a Jukebox
+- If the Allay is handed an Amethyst Shard while dancing it will duplicate
+  - Duplication has a 5-minute cooldown
+
+Sculk Catalyst
+- Sculk Catalysts will now drop 5 XP instead of 20 XP
+
+Added Game Events
+- jukebox_play
+- jukebox_stop_play
+
+Chat Types
+- Chat types added to the chat_types registry are now only used for player chat, and not system messages
+  - The system and game_info chat types have been removed
+- Chat types have been simplified and are now only required to define chat and narration decorations
+  - Chat types no longer support overlays
+  - A system message should instead be used to display overlays
+- The msg_command chat type has been split apart into msg_command_incoming and msg_command_outgoing
+- The team_msg_command chat type has been split apart into team_msg_command_incoming and team_msg_command_outgoing
+- The team_name chat type parameter has been renamed to target
+  - This chat type parameter is now used by msg_command_outgoing
+
+Components
+- The run_command click event for text components no longer supports sending chat messages directly
+  - Only commands are supported
+  - This means values now always need to be /-prefixed
+  - Commands such as /say that produce a signed player chat message are not allowed
+    - /tellraw should be used instead

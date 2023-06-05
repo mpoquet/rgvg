@@ -1,0 +1,3 @@
+Les différentes corrections apportées avec la version 1.19.2 :
+- Correction d’un problème entraînant la déconnexion des joueurs lors d’une discussion sécurisée.
+- Correction d’un crash dans l’écran des interactions sociales

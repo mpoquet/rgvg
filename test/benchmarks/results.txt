@@ -1,0 +1,168 @@
+cgvg - 10: repeat 10 time /opt/homebrew/bin/cg "the" test/benchmarks/linux/
+15.62s user 8.92s system 32% cpu 1:16.14 total
+14.43s user 8.15s system 31% cpu 1:10.56 total
+13.41s user 7.44s system 36% cpu 56.752 total
+13.26s user 7.62s system 37% cpu 56.282 total
+13.12s user 7.57s system 37% cpu 55.823 total
+13.33s user 7.73s system 37% cpu 56.125 total
+13.19s user 7.71s system 37% cpu 56.335 total
+13.25s user 7.78s system 37% cpu 56.813 total
+13.53s user 7.95s system 36% cpu 58.339 total
+12.95s user 7.59s system 36% cpu 56.101 total
+rgvg - 10 - grep: repeat 10 time ./cg/target/release/cg "the" ./test/benchmarks/linux
+41.17s user 5.08s system 71% cpu 1:05.04 total
+40.78s user 4.88s system 71% cpu 1:03.81 total
+40.87s user 4.61s system 72% cpu 1:03.06 total
+41.09s user 4.73s system 72% cpu 1:02.94 total
+41.30s user 4.83s system 72% cpu 1:03.80 total
+41.00s user 4.97s system 71% cpu 1:04.44 total
+40.86s user 4.78s system 72% cpu 1:03.03 total
+40.70s user 4.81s system 72% cpu 1:02.91 total
+40.86s user 4.81s system 72% cpu 1:03.10 total
+40.97s user 4.75s system 71% cpu 1:04.22 total
+rgvg - 10 - ugrep: repeat 10 time ./cg/target/release/cg "the" ./test/benchmarks/linux --tool=ugrep
+31.91s user 5.71s system 76% cpu 49.276 total
+32.18s user 5.60s system 76% cpu 49.195 total
+31.80s user 5.26s system 76% cpu 48.622 total
+31.79s user 5.32s system 76% cpu 48.523 total
+31.99s user 5.20s system 76% cpu 48.466 total
+31.66s user 5.39s system 76% cpu 48.231 total
+31.67s user 5.37s system 77% cpu 47.529 total
+31.69s user 5.44s system 76% cpu 48.556 total
+32.67s user 5.71s system 72% cpu 52.799 total
+32.25s user 5.55s system 72% cpu 51.964 total
+rgvg - 10 - ripgrep: repeat 10 time ./cg/target/release/cg "the" ./test/benchmarks/linux --tool=ripgrep
+31.65s user 5.92s system 74% cpu 50.258 total
+31.25s user 5.88s system 75% cpu 49.365 total
+31.59s user 5.96s system 73% cpu 51.299 total
+31.27s user 5.84s system 73% cpu 50.179 total
+31.60s user 5.68s system 74% cpu 49.965 total
+31.46s user 5.70s system 75% cpu 49.253 total
+31.39s user 5.80s system 74% cpu 49.840 total
+31.40s user 5.94s system 73% cpu 50.472 total
+31.29s user 5.63s system 73% cpu 49.904 total
+31.50s user 5.87s system 73% cpu 51.016 total
+vgrep - 10: repeat 10 time vgrep "the" ./test/benchmarks/linux --no-less
+5.01s user 5.64s system 33% cpu 31.477 total
+5.13s user 5.51s system 34% cpu 30.833 total
+5.04s user 5.40s system 33% cpu 31.244 total
+5.30s user 5.73s system 33% cpu 32.663 total
+5.18s user 5.54s system 33% cpu 32.403 total
+5.18s user 5.72s system 34% cpu 31.755 total
+5.10s user 5.54s system 33% cpu 31.651 total
+5.15s user 5.57s system 34% cpu 31.266 total
+5.26s user 5.46s system 34% cpu 31.485 total
+5.18s user 5.67s system 35% cpu 30.642 total
+
+
+cgvg - 10: repeat 10 time /opt/homebrew/bin/cg "gay" test/benchmarks/linux/
+4.71s user 3.03s system 65% cpu 11.856 total
+4.72s user 2.77s system 99% cpu 7.529 total
+4.75s user 2.81s system 99% cpu 7.607 total
+4.72s user 2.79s system 99% cpu 7.530 total
+4.69s user 2.76s system 99% cpu 7.467 total
+4.70s user 2.73s system 99% cpu 7.444 total
+4.70s user 2.76s system 99% cpu 7.470 total
+4.70s user 2.75s system 99% cpu 7.463 total
+4.73s user 2.76s system 99% cpu 7.502 total
+4.70s user 2.75s system 99% cpu 7.463 total
+rgvg - 10 - grep: repeat 10 time ./cg/target/release/cg "gay" ./test/benchmarks/linux
+8.41s user 1.70s system 71% cpu 14.145 total
+8.52s user 1.79s system 69% cpu 14.823 total
+8.45s user 1.71s system 69% cpu 14.611 total
+8.48s user 1.71s system 69% cpu 14.692 total
+8.48s user 1.70s system 69% cpu 14.609 total
+8.48s user 1.70s system 69% cpu 14.686 total
+8.47s user 1.73s system 69% cpu 14.741 total
+8.46s user 1.75s system 69% cpu 14.738 total
+8.45s user 1.75s system 68% cpu 14.788 total
+8.40s user 1.69s system 67% cpu 14.867 total
+rgvg - 10 - ugrep: repeat 10 time ./cg/target/release/cg "gay" ./test/benchmarks/linux --tool=ugrep
+1.00s user 2.21s system 136% cpu 2.349 total
+0.99s user 2.10s system 139% cpu 2.222 total
+0.99s user 2.09s system 136% cpu 2.259 total
+1.00s user 2.16s system 142% cpu 2.215 total
+0.99s user 2.07s system 131% cpu 2.329 total
+0.98s user 2.08s system 145% cpu 2.103 total
+0.99s user 2.15s system 147% cpu 2.128 total
+0.98s user 2.06s system 141% cpu 2.141 total
+0.98s user 2.06s system 132% cpu 2.299 total
+1.00s user 2.14s system 140% cpu 2.226 total
+rgvg - 10 - ripgrep: repeat 10 time ./cg/target/release/cg "gay" ./test/benchmarks/linux --tool=ripgrep
+0.67s user 2.30s system 124% cpu 2.377 total
+0.67s user 2.31s system 122% cpu 2.424 total
+0.67s user 2.34s system 124% cpu 2.410 total
+0.66s user 2.26s system 121% cpu 2.408 total
+0.63s user 2.28s system 104% cpu 2.787 total
+0.63s user 2.26s system 105% cpu 2.745 total
+0.64s user 2.32s system 106% cpu 2.776 total
+0.63s user 2.26s system 104% cpu 2.778 total
+0.63s user 2.27s system 105% cpu 2.762 total
+0.64s user 2.52s system 98% cpu 3.205 total
+vgrep - 10: repeat 10 time vgrep "gay" ./test/benchmarks/linux --no-less
+0.78s user 2.51s system 705% cpu 0.466 total
+0.78s user 2.49s system 705% cpu 0.463 total
+0.78s user 2.51s system 707% cpu 0.465 total
+0.78s user 2.52s system 697% cpu 0.474 total
+0.82s user 2.58s system 642% cpu 0.529 total
+0.77s user 2.46s system 686% cpu 0.471 total
+0.78s user 2.53s system 714% cpu 0.462 total
+0.77s user 2.48s system 709% cpu 0.459 total
+0.77s user 2.47s system 696% cpu 0.466 total
+0.73s user 2.44s system 276% cpu 1.145 total
+
+cgvg - 10: time /opt/homebrew/bin/cg "void \*" test/benchmarks/linux/ (10 times)
+5.40s user 3.80s system 54% cpu 17.017 total
+5.37s user 3.69s system 54% cpu 16.682 total
+5.39s user 3.66s system 53% cpu 16.805 total
+5.37s user 3.69s system 54% cpu 16.637 total
+5.36s user 3.62s system 54% cpu 16.477 total
+5.45s user 3.73s system 53% cpu 17.047 total
+5.27s user 3.18s system 66% cpu 12.680 total
+5.23s user 3.02s system 78% cpu 10.512 total
+5.21s user 2.99s system 77% cpu 10.557 total
+5.23s user 3.03s system 77% cpu 10.723 total
+rgvg - 10 - grep: time ./cg/target/release/cg "void \*" ./test/benchmarks/linux (10 times)
+10.99s user 2.28s system 62% cpu 21.158 total
+10.79s user 2.19s system 67% cpu 19.256 total
+10.98s user 2.25s system 63% cpu 20.864 total
+10.81s user 2.28s system 63% cpu 20.508 total
+10.69s user 2.05s system 67% cpu 18.897 total
+10.67s user 1.96s system 68% cpu 18.381 total
+10.76s user 1.98s system 67% cpu 18.863 total
+10.73s user 2.03s system 69% cpu 18.478 total
+10.66s user 1.95s system 69% cpu 18.114 total
+10.62s user 1.92s system 69% cpu 17.998 total
+rgvg - 10 - ugrep: time ./cg/target/release/cg "void \*" ./test/benchmarks/linux --tool=ugrep (10 times)
+3.58s user 2.69s system 102% cpu 6.115 total
+3.62s user 2.53s system 101% cpu 6.089 total
+3.62s user 2.54s system 101% cpu 6.100 total
+3.61s user 2.52s system 100% cpu 6.105 total
+3.62s user 2.62s system 103% cpu 6.051 total
+3.62s user 2.58s system 102% cpu 6.053 total
+3.62s user 2.64s system 107% cpu 5.812 total
+3.58s user 2.54s system 100% cpu 6.115 total
+3.61s user 2.50s system 101% cpu 6.043 total
+3.62s user 2.63s system 99% cpu 6.293 total
+rgvg - 10 - ripgrep: time ./cg/target/release/cg "void \*" ./test/benchmarks/linux --tool=ripgrep (10 times)
+3.35s user 2.87s system 99% cpu 6.267 total
+3.36s user 2.74s system 103% cpu 5.905 total
+3.37s user 2.75s system 101% cpu 6.043 total
+3.38s user 2.77s system 102% cpu 5.971 total
+3.40s user 2.76s system 105% cpu 5.857 total
+3.37s user 2.75s system 106% cpu 5.773 total
+3.38s user 2.68s system 102% cpu 5.948 total
+3.38s user 2.73s system 109% cpu 5.569 total
+3.46s user 2.75s system 109% cpu 5.647 total
+3.46s user 2.81s system 116% cpu 5.390 total
+vgrep - 10: time vgrep "void \*" ./test/benchmarks/linux --no-less (10 times)
+1.12s user 2.83s system 70% cpu 5.596 total
+1.12s user 2.75s system 73% cpu 5.289 total
+1.11s user 2.76s system 78% cpu 4.962 total
+1.13s user 2.73s system 78% cpu 4.905 total
+1.13s user 2.90s system 79% cpu 5.040 total
+1.14s user 2.92s system 80% cpu 5.031 total
+1.11s user 2.82s system 77% cpu 5.086 total
+1.11s user 2.78s system 78% cpu 4.921 total
+1.12s user 2.79s system 78% cpu 5.011 total
+1.10s user 2.73s system 78% cpu 4.899 total

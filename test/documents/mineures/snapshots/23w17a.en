@@ -1,0 +1,50 @@
+New Features
+- Added new advancements for Trails & Tales
+- Added new Trails & Tales ambient music
+- Added a new music disc obtainable through archaeology
+
+New advancements
+Husbandry advancements
+- Smells interesting : Obtain a Sniffer Egg
+- Little sniffs : Feed a Snifflet (requires Smells interesting)
+- Planting the past : Plant any Sniffer seed (requires Little sniffs)
+
+Adventure advancements
+- Respecting the remnants : Brush a Suspicious block to obtain a Pottery Sherd
+- Careful restoration : Make a Decorated Pot out of 4 Pottery Sherds (requires Respecting the remnants)
+- Crafting a new look : Craft a trimmed armor at a Smithing Table
+- Smithing with style : Apply these smithing templates at least once: Spire, Snout, Rib, Ward, Silence, Vex, Tide, Wayfinder (requires Crafting a new look)
+
+New ambient music
+- Added the following new music tracks by Aaron Cherof to Cherry Groves, Desert, Jungle, Badlands, and Flower Forest biomes
+  - A Familiar Room
+  - Bromeliad
+  - Crescent Dunes
+  - Echo in the Wind
+
+New music disc
+- Added a new music disc which can be found by brushing suspicious blocks in Trail Ruins
+  - When put in a Jukebox, Relic by Aaron Cherof is played
+
+Changes
+- Both types of Sculk Sensors now stay in their Cooldown phase for 10 ticks, with other phase timings being adjusted to compensate
+- Crafted Decorated Pots with at least one pattern now have a hover tooltip displaying the Sherd & Brick ingredients
+- Updated the credits
+  - Added the ability to scroll upwards by pressing the up arrow key
+
+Sculk Sensor Phases
+- Sculk Sensors and Calibrated Sculk Sensors have three phases: Inactive, Active and Cooldown
+- The default phase is Inactive
+  - This phase lasts indefinitely until the block receives a vibration
+  - During this phase, the block is able to listen to nearby vibrations until one has been scheduled
+- When a scheduled vibration is received, the block switches to the Active phase
+  - This phase lasts 30 game ticks for Sculk Sensors, and 10 game ticks for Calibrated Sculk Sensors
+  - During this phase, the block stops listening to nearby vibrations, wiggles its tendrils and emits a redstone signal and light
+- After the Active phase has finished, the block switches to a Cooldown phase
+  - This phase lasts for 10 game ticks
+  - During this phase, the block keeps wiggling its tendrils, but no longer emits a redstone signal nor light
+  - Finally, once this phase is finished, the block will switch back to the Inactive phase
+- Previously, some of these phases had different timing values:
+  - Active: 40 game ticks for Sculk Sensors and 20 game ticks for Calibrated Sculk Sensors
+  - Cooldown: 1 game tick for both types of Sculk Sensors
+- These phase timings were tweaked so that it is less common for activated contraptions to recursively activate the Sculk Sensor that powered them
