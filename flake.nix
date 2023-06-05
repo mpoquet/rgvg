@@ -12,7 +12,18 @@
         naersk-lib = pkgs.callPackage naersk { };
       in rec {
         packages = {
-          rgvg = naersk-lib.buildPackage ./.;
+          rgvg = naersk-lib.buildPackage {
+            src = pkgs.lib.sourceByRegex ./. [
+              "^Cargo\.toml"
+              "^Cargo\.lock"
+              "^src"
+              "^src/.*\.rs"
+              "^src/bin"
+              "^src/bin/.*\.rs"
+              "^src/input"
+              "^src/input/.*\.rs"
+            ];
+          };
         };
         devShells = {
           dev = pkgs.mkShell {
