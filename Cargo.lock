@@ -30,15 +30,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "50d30906286121d95be3d479533b458f87493b30a4b5f79a607db8f5d11aa91f"
 
 [[package]]
-name = "cg"
-version = "0.1.0"
-dependencies = [
- "clap",
- "home",
- "regex",
-]
-
-[[package]]
 name = "clap"
 version = "4.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -228,6 +219,15 @@ name = "regex-syntax"
 version = "0.6.29"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f162c6dd7b008981e4d40210aca20b4bd0f9b60ca9271061b07f78537722f2e1"
+
+[[package]]
+name = "rgvg"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "home",
+ "regex",
+]
 
 [[package]]
 name = "rustix"
