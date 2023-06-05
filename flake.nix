@@ -31,7 +31,7 @@
             RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
           };
           user = pkgs.mkShell {
-            buildInputs = [ packages.rgvg pkgs.ripgrep ];
+            buildInputs = [ packages.rgvg pkgs.gnugrep pkgs.ripgrep pkgs.ugrep ];
           };
         };
       });
