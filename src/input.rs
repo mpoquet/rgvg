@@ -1,9 +1,8 @@
 pub mod framework;
 pub mod tools;
 
-use clap::{Parser, command, ArgGroup};
+use clap::{command, ArgGroup, Parser};
 use std::path::PathBuf;
-
 
 /// Interesting tools: clap_complete, clap_man
 #[derive(Parser, Debug)]
@@ -13,31 +12,31 @@ use std::path::PathBuf;
 
 pub struct Args {
     /// Externary option - defines the tool to use. Possible tools are grep, ripgrep, ugrep.
-    #[arg(short,long, default_value="grep")]
+    #[arg(short, long, default_value = "grep")]
     pub tool: String,
     /// Externary option - lists tools
-    #[arg(short,long)]
-    pub list_tools: bool, 
+    #[arg(short, long)]
+    pub list_tools: bool,
     /// Color mode
-    #[arg(long, default_value="yes")]
+    #[arg(long, default_value = "yes")]
     pub color: String,
     /// Dry run - Prints command instead of running them.
-    #[arg(long,short='n')]
+    #[arg(long, short = 'n')]
     pub dry: bool,
     /// Order results alphabeticacally according to file name, line number, and line number
-    #[arg(long,short)]
+    #[arg(long, short)]
     pub order_results: bool,
     /// Remove leading space
     #[arg(long)]
     pub remove_leading: bool,
     /// The regular expression used for searching.
-    #[arg(value_name="PATTERN")]
+    #[arg(value_name = "PATTERN")]
     pub regex_pattern: Option<String>,
     /// The file or directory to search.
-    #[arg(value_name="PATH")]
+    #[arg(value_name = "PATH")]
     file: Vec<PathBuf>,
     /// Case insensitive mode
-    #[arg(short='i')]
+    #[arg(short = 'i')]
     casei: bool,
     /// Globs d'inclusion
     #[arg(long)]

@@ -1,17 +1,17 @@
-use std::{path::PathBuf};
+use std::path::PathBuf;
 
-use crate::common::{Match, NAME_LEN, MATCH_LEN, VERSION, LAST_PATH};
+use crate::common::{Match, LAST_PATH, MATCH_LEN, NAME_LEN, VERSION};
 
 use regex::Regex;
 
-type Item = (usize,&'static str,&'static str);
+type Item = (usize, &'static str, &'static str);
 
 //rg the ./documents --color=always --line-number -H --no-heading
 //ggrep the ./documents --color=always -Hnr --exclude=t.txt --exclude-dir=edge
 //ugrep the ./documents -rn --color=always
 
 pub struct OutputFormat {
-    /// The filename. 
+    /// The filename.
     filename: Item,
     /// Display line number.
     line: Item,
@@ -23,9 +23,6 @@ pub struct OutputFormat {
     // is_match_highlighted: bool,
 }
 
-
-
-
 trait Restrict<T> {
     fn restrict(source: T, max: usize) -> Self;
 }
@@ -35,7 +32,7 @@ impl Restrict<&str> for String {
 
         let mut j = top;
         while j > 0 && !source.is_char_boundary(j) {
-            j-=1;
+            j -= 1;
         }
         let result = source[..j].to_owned();
         return result;
@@ -52,9 +49,18 @@ fn strip(text: &str, strip: bool) -> String {
 
 fn create_outputformat(format: OutputFormat) -> Regex {
     let mut c: Vec<(usize, String)> = Vec::new();
-    c.push((format.filename.0, format.filename.1.to_string() + r"(.+)" + format.filename.2));
-    c.push((format.line.0, format.line.1.to_string() + r"(\d+)" + format.line.2));
-    c.push((format.matched.0, format.matched.1.to_string() + r"(.+)" + format.matched.2));
+    c.push((
+        format.filename.0,
+        format.filename.1.to_string() + r"(.+)" + format.filename.2,
+    ));
+    c.push((
+        format.line.0,
+        format.line.1.to_string() + r"(\d+)" + format.line.2,
+    ));
+    c.push((
+        format.matched.0,
+        format.matched.1.to_string() + r"(.+)" + format.matched.2,
+    ));
 
     c.sort_by(|a, b| return a.0.cmp(&b.0));
 
@@ -67,7 +73,7 @@ fn create_outputformat(format: OutputFormat) -> Regex {
 }
 
 #[allow(dead_code)]
-pub fn read(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Match> {
+pub fn read(format: OutputFormat, text: &str, color: bool, stp: bool) -> Vec<Match> {
     let r = create_outputformat(format);
     let mut matches = Vec::new();
 
@@ -94,7 +100,7 @@ pub fn read(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Matc
     return matches;
 }
 
-pub fn read_display(format: OutputFormat, text: &str, color: bool, stp:bool) -> Vec<Match> {
+pub fn read_display(format: OutputFormat, text: &str, color: bool, stp: bool) -> Vec<Match> {
     crate::common::display_head(PathBuf::new(), color);
     let r = create_outputformat(format);
     let mut matches = Vec::new();
@@ -165,7 +171,8 @@ fn pthtob(v: PathBuf) -> Vec<u8> {
     return v.as_os_str().as_bytes().to_vec();
 }
 #[cfg(target_family = "windows")]
-fn pthtob(v: PathBuf) -> Vec<u8> { //! Untested
+fn pthtob(v: PathBuf) -> Vec<u8> {
+    //! Untested
     use std::os::windows::prelude::OsStrExt;
     return v.encode_wide().map(|v| v.to_be_bytes()).collect().concat();
 }
@@ -180,7 +187,6 @@ fn header() -> Vec<u8> {
     return s;
 }
 
-
 pub fn write(result: &Vec<Match>) {
     //println!("Writing to \x1b[35m*${{HOME}}/.rgvg_last\x1b[39m...");
     let v: Vec<Vec<u8>> = result.iter().map(|m| m.into()).collect();
@@ -188,6 +194,8 @@ pub fn write(result: &Vec<Match>) {
     let mut s: Vec<u8> = header();
 
     s.extend(v);
-    let h = home::home_dir().expect("Could not find home dir.").join(LAST_PATH);
+    let h = home::home_dir()
+        .expect("Could not find home dir.")
+        .join(LAST_PATH);
     std::fs::write(h, s).expect("Could not write to history file.");
 }

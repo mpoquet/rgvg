@@ -1,10 +1,11 @@
-use super::framework::{Entry, Formatter, Name, Argument, DefaultValue, Convertible, Transformable, Expand, Transform};
+use super::framework::{
+    Argument, Convertible, DefaultValue, Entry, Expand, Formatter, Name, Transform, Transformable,
+};
 use super::Args;
-use std::collections::{BTreeMap};
 use crate::common::command::Cmd;
+use std::collections::BTreeMap;
 
-
-#[derive(Clone)] 
+#[derive(Clone)]
 pub struct Grepper {
     /// A regular expression used for searching.
     regex_pattern: Entry,
@@ -12,7 +13,7 @@ pub struct Grepper {
     file: Entry,
     /// Case sensitivity flag
     casei: Entry,
-    
+
     include_files: Entry,
     exclude_files: Entry,
     include_dir: Entry,
@@ -25,7 +26,7 @@ pub struct Grepper {
 }
 
 pub const GREP: Grepper = Grepper {
-    regex_pattern: Entry { 
+    regex_pattern: Entry {
         defaults_to: DefaultValue::Mandatory,
         format: (Formatter::Default, Formatter::Default),
         target_name: Name::Blank(0),
@@ -37,7 +38,7 @@ pub const GREP: Grepper = Grepper {
         target_name: Name::Blank(1),
         target_type: Argument::CollectionPathPattern(None),
     },
-    casei: Entry::bool(Name::Short('i')), 
+    casei: Entry::bool(Name::Short('i')),
     include_files: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
@@ -62,12 +63,12 @@ pub const GREP: Grepper = Grepper {
         target_name: Name::LongC("exclude-dir"),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "-Hnr",
+    default_args: "-Hnr",
     command: "grep",
 };
 
 pub const RIPGREP: Grepper = Grepper {
-    regex_pattern: Entry { 
+    regex_pattern: Entry {
         defaults_to: DefaultValue::Mandatory,
         format: (Formatter::Default, Formatter::Default),
         target_name: Name::Blank(0),
@@ -79,7 +80,7 @@ pub const RIPGREP: Grepper = Grepper {
         target_name: Name::Blank(1),
         target_type: Argument::CollectionPathPattern(None),
     },
-    casei: Entry::bool(Name::Short('i')), 
+    casei: Entry::bool(Name::Short('i')),
     include_files: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Prefix("")),
@@ -104,12 +105,12 @@ pub const RIPGREP: Grepper = Grepper {
         target_name: Name::Short('g'),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "-Hn --no-heading",
+    default_args: "-Hn --no-heading",
     command: "rg",
 };
 
 pub const UGREP: Grepper = Grepper {
-    regex_pattern: Entry { 
+    regex_pattern: Entry {
         defaults_to: DefaultValue::Mandatory,
         format: (Formatter::Default, Formatter::Default),
         target_name: Name::Blank(0),
@@ -121,7 +122,7 @@ pub const UGREP: Grepper = Grepper {
         target_name: Name::Blank(1),
         target_type: Argument::CollectionPathPattern(None),
     },
-    casei: Entry::bool(Name::Short('i')), 
+    casei: Entry::bool(Name::Short('i')),
     include_files: Entry {
         defaults_to: DefaultValue::Skip,
         format: (Formatter::Default, Formatter::Default),
@@ -146,7 +147,7 @@ pub const UGREP: Grepper = Grepper {
         target_name: Name::LongC("exclude-dir"),
         target_type: Argument::CollectionText(None),
     },
-    default_args:  "-rn",
+    default_args: "-rn",
     command: "ugrep",
 };
 
@@ -161,16 +162,16 @@ pub fn picker(tool: &str) -> Grepper {
 
 impl Convertible<Args> for Grepper {
     /// Yipeee ^-^
-    /// 
+    ///
     /// First we resolve positions,
     ///   Try to know where each element will be.
-    ///   As a rule of thumb, we'd rather want elements with names to be placed later. 
+    ///   As a rule of thumb, we'd rather want elements with names to be placed later.
     ///   Not that this would matter that much, usually!
     ///   
-    ///   What we do here, is log which arguments have a fixed position, 
+    ///   What we do here, is log which arguments have a fixed position,
     ///     then throw all the non-ordered ones after.
     ///   To optimize the whole thing, we generate the arguments in the same time;
-    ///     throw the non-positionals in a vec, and the positionals in a tree. 
+    ///     throw the non-positionals in a vec, and the positionals in a tree.
     fn populate(&mut self, with: &Args) -> BTreeMap<Name, Vec<Entry>> {
         let mut r: BTreeMap<Name, Vec<Entry>> = BTreeMap::new();
         self.regex_pattern.fill(&with.regex_pattern);
@@ -197,7 +198,12 @@ impl Convertible<Args> for Grepper {
         for i in with {
             r.transform(&i.1);
         }
-        r.extend(self.default_args.split(" ").map(|c| c.to_string()).collect::<Vec<String>>());
+        r.extend(
+            self.default_args
+                .split(" ")
+                .map(|c| c.to_string())
+                .collect::<Vec<String>>(),
+        );
         return (self.command.to_string(), r);
     }
 }

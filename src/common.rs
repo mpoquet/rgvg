@@ -1,4 +1,4 @@
-use std::{fmt::Display, path::PathBuf, io::BufRead};
+use std::{fmt::Display, io::BufRead, path::PathBuf};
 
 pub const LAST_PATH: &'static str = ".rgvg_last";
 #[allow(dead_code)]
@@ -26,9 +26,15 @@ impl From<&[u8]> for Match {
         let (l, rest) = rest.split_at(std::mem::size_of::<usize>());
         let m = rest;
         return Match {
-            filename: String::from_utf8(f.to_vec()).expect("Data should be valid utf-8.").trim_end_matches('\x00').to_string(),
+            filename: String::from_utf8(f.to_vec())
+                .expect("Data should be valid utf-8.")
+                .trim_end_matches('\x00')
+                .to_string(),
             line: usize::from_be_bytes(l.try_into().unwrap()),
-            matched: String::from_utf8(m.to_vec()).expect("Data should be valid utf-8.").trim_end_matches('\x00').to_string(),
+            matched: String::from_utf8(m.to_vec())
+                .expect("Data should be valid utf-8.")
+                .trim_end_matches('\x00')
+                .to_string(),
         };
     }
 }
@@ -41,7 +47,15 @@ impl Display for Match {
                 true => ">",
             }
         }
-        write!(f, "{}{} {} {}{}", self.filename, disp_flag(NAME_LEN == self.filename.len()), self.line, self.matched, disp_flag(MATCH_LEN == self.matched.len()))
+        write!(
+            f,
+            "{}{} {} {}{}",
+            self.filename,
+            disp_flag(NAME_LEN == self.filename.len()),
+            self.line,
+            self.matched,
+            disp_flag(MATCH_LEN == self.matched.len())
+        )
     }
 }
 impl Match {
@@ -98,7 +112,8 @@ fn btopth(v: &[u8]) -> PathBuf {
 }
 
 #[cfg(target_family = "windows")]
-fn btopth(v: &[u8]) -> PathBuf { //todo (windows :( )
+fn btopth(v: &[u8]) -> PathBuf {
+    //todo (windows :( )
     use std::os::windows::ffi::OsStringExt;
     let r = v.iter();
     return std::ffi::OsString::from_wide(r).into();
@@ -109,8 +124,9 @@ fn read_header(data: &mut Vec<u8>) -> (usize, PathBuf) {
     let (mut h, rest) = rest.split_at(NAME_LEN);
     let n = usize::from_be_bytes(v.try_into().unwrap());
     let mut pwd = Vec::new();
-    h.read_until(0, &mut pwd).expect("Could not read last path!");
-    let s = btopth(&pwd[..pwd.len()-1]);
+    h.read_until(0, &mut pwd)
+        .expect("Could not read last path!");
+    let s = btopth(&pwd[..pwd.len() - 1]);
     *data = rest.to_vec();
 
     return (n, s);
@@ -118,24 +134,28 @@ fn read_header(data: &mut Vec<u8>) -> (usize, PathBuf) {
 
 #[allow(dead_code)] //Needed bc its used in vg
 pub fn open_last() -> Option<(PathBuf, Vec<Match>)> {
-    let h = home::home_dir().expect("Could not find home dir.").join(LAST_PATH);
+    let h = home::home_dir()
+        .expect("Could not find home dir.")
+        .join(LAST_PATH);
 
     let s = std::fs::read(h);
-    
+
     let mut s = match s {
         Err(_) => return None, //No last file
         Ok(v) => v,
     };
 
-    let (v,h) = read_header(&mut s);
-    if v != VERSION { return None };
+    let (v, h) = read_header(&mut s);
+    if v != VERSION {
+        return None;
+    };
 
     let mut m = vec![];
     let mut i = 0;
-    while s.len() >= DATA_LEN*(i+1) {
-        let r = &s[DATA_LEN*i..DATA_LEN*(i+1)];
+    while s.len() >= DATA_LEN * (i + 1) {
+        let r = &s[DATA_LEN * i..DATA_LEN * (i + 1)];
         m.push(r.into());
-        i+=1;
+        i += 1;
     }
 
     return Some((h, m));
@@ -147,22 +167,22 @@ pub fn display(pwd: PathBuf, result: &Vec<Match>, color: bool) {
     if color {
         let mut i = 0;
         for m in result {
-            match i%2 {
+            match i % 2 {
                 0 => println!("\x1b[31m{}\x1b[39m {}", i, m.disp()),
                 1 => println!("\x1b[1m\x1b[31m{}\x1b[39m {}\x1b[0m", i, m.disp()),
                 _ => panic!("CPU borken :("),
             };
-            i+=1;
+            i += 1;
         }
     } else {
         let mut i = 0;
         for m in result {
-            match i%2 {
+            match i % 2 {
                 0 => println!("{} {}", i, m),
                 1 => println!("{} {}", i, m),
                 _ => panic!("CPU borken :("),
             };
-            i+=1;
+            i += 1;
         }
     }
 }
@@ -177,7 +197,9 @@ pub fn display_head(pwd: PathBuf, color: bool) {
             None => "{unprintable_string}",
         },
     };
-    if p.len() == 0 { return; }
+    if p.len() == 0 {
+        return;
+    }
     if color {
         println!("Within \x1b[35m{}\x1b[39m:", p);
     } else {
@@ -186,28 +208,28 @@ pub fn display_head(pwd: PathBuf, color: bool) {
 }
 #[allow(dead_code)]
 pub fn display_once(result: &Match, color: bool) {
-    static mut I:i32 = 0;
+    static mut I: i32 = 0;
     unsafe {
         if color {
-            match I%2 {
+            match I % 2 {
                 0 => println!("\x1b[31m{}\x1b[39m {}", I, result.disp()),
                 1 => println!("\x1b[1m\x1b[31m{}\x1b[39m {}\x1b[0m", I, result.disp()),
                 _ => panic!("CPU borken :("),
             };
-            I+=1;
+            I += 1;
         } else {
-            match I%2 {
+            match I % 2 {
                 0 => println!("{} {}", I, result),
                 1 => println!("{} {}", I, result),
                 _ => panic!("CPU borken :("),
             };
-            I+=1;
+            I += 1;
         }
     }
 }
 
 pub fn last(color: bool) {
-    let (r,s) = open_last().expect("No last file for user! Use 'cg' to create a last file.");
+    let (r, s) = open_last().expect("No last file for user! Use 'cg' to create a last file.");
     display(r, &s, color);
 }
 
@@ -217,31 +239,37 @@ pub fn color(color: &String) -> bool {
         "yes" => true,
         "never" => false,
         "no" => false,
-        _ => panic!("{} is not a valid color setting", color)
+        _ => panic!("{} is not a valid color setting", color),
     }
 }
 
 pub mod command {
-    use std::process::{Command,Output,Stdio,Child, ExitStatus};
+    use std::process::{Child, Command, ExitStatus, Output, Stdio};
 
     pub type Cmd = (String, Vec<String>);
 
     fn build(command: String, args: Vec<String>) -> Command {
         let mut output = Command::new(command);
-    
+
         for i in args {
             output.arg(i);
         }
         return output;
     }
-    
+
     ///Call the first command in a call chain
     fn begin(command: String, args: Vec<String>) -> Child {
-        return build(command, args).stdout(Stdio::piped()).stderr(Stdio::piped()).spawn().expect("Command could not be executed.");
+        return build(command, args)
+            .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
+            .spawn()
+            .expect("Command could not be executed.");
     }
     ///Call the first command in a call chain
     fn blind_begin(command: String, args: Vec<String>) -> Child {
-        return build(command, args).spawn().expect("Command could not be executed.");
+        return build(command, args)
+            .spawn()
+            .expect("Command could not be executed.");
     }
     /// Links the first command's ouput to the second's input, then starts the second command.
     /*fn link(first: Child, command: String, args: Vec<String>) -> Child {
@@ -266,5 +294,4 @@ pub mod command {
     pub fn blind_call(command: Cmd) -> Result<ExitStatus, std::io::Error> {
         blind_finish(&mut blind_begin(command.0.to_string(), command.1))
     }
-    
 }

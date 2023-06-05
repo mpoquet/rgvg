@@ -1,9 +1,8 @@
-use std::collections::{BTreeMap};
-use std::path::PathBuf;
-use std::fmt::{self, Display};
-use regex::Regex;
 use crate::common::command::Cmd;
-
+use regex::Regex;
+use std::collections::BTreeMap;
+use std::fmt::{self, Display};
+use std::path::PathBuf;
 
 type Index = u8;
 
@@ -44,14 +43,14 @@ pub enum Argument {
 pub enum Formatter {
     /// [in,out] No formatting
     Default,
-    /// [in,out] A prefix, 
-    Prefix(&'static str)
+    /// [in,out] A prefix,
+    Prefix(&'static str),
 }
 #[derive(Clone, Debug)]
 #[allow(dead_code)]
 pub enum DefaultValue {
     /// CANNOT be ommited
-    Mandatory, 
+    Mandatory,
     /// Just forgedaboutit
     Skip,
     /// provide a default.
@@ -60,15 +59,11 @@ pub enum DefaultValue {
 #[derive(Clone, Debug)]
 pub struct Entry {
     pub defaults_to: DefaultValue,
-    pub format: (Formatter,Formatter),
+    pub format: (Formatter, Formatter),
     pub target_name: Name,
     pub target_type: Argument,
 }
-pub struct Error {
-
-}
-
-
+pub struct Error {}
 
 pub trait Transform<T> {
     fn transform(&mut self, value: &T);
@@ -77,22 +72,22 @@ pub trait Generate {
     /// Vec and not option, because of collection arguments.
     fn generate(self) -> Vec<String>;
 }
-trait Vectorize : Sized {
+trait Vectorize: Sized {
     fn vec(self) -> Vec<String>; //
 }
 pub trait Transformable<U> {
     /// Takes an empty entry and fills it.
     fn fill(&mut self, with: &U);
-
 }
 pub trait Expand {
     type Key;
     type Item;
-    fn expand(&mut self, key: Self::Key, value: Self::Item) where Self::Key: Ord;
+    fn expand(&mut self, key: Self::Key, value: Self::Item)
+    where
+        Self::Key: Ord;
     #[allow(unused_variables)]
     fn expand_field(&mut self, value: &Self::Item) {}
 }
-
 
 impl Default for Name {
     fn default() -> Self {
@@ -117,15 +112,15 @@ impl TryFrom<(regex::Match<'_>, &str)> for Name {
             "d1" => Ok(Name::Blank(s[1..].parse().unwrap())),
             "d2" => Ok(Name::Short(s.chars().nth(1).unwrap())),
             "d3" => Ok(Name::Long(s[2..].to_string())),
-            _ => Err(Error {  })
-        } 
+            _ => Err(Error {}),
+        }
     }
 }
 
 impl Name {
     fn cleanup(&mut self) {
         match self {
-            Name::LongC(s) => { *self = Name::Long(s.to_string()) },
+            Name::LongC(s) => *self = Name::Long(s.to_string()),
             _ => return,
         };
     }
@@ -133,11 +128,13 @@ impl Name {
         match self {
             Name::Blank(_) => return,
             Name::Undefined => return,
-            _ => for c in arglist {
-                if c.len() > 0 {
-                    *c = self.to_string() + "=" + c;
-                } else {
-                    *c = self.to_string() + c;
+            _ => {
+                for c in arglist {
+                    if c.len() > 0 {
+                        *c = self.to_string() + "=" + c;
+                    } else {
+                        *c = self.to_string() + c;
+                    }
                 }
             }
         }
@@ -150,7 +147,7 @@ impl From<DefaultValue> for Argument {
         match value {
             DefaultValue::Skip => Argument::Empty(Some(())),
             DefaultValue::Default(x) => x,
-            DefaultValue::Mandatory => Argument::Empty(None), 
+            DefaultValue::Mandatory => Argument::Empty(None),
         }
     }
 }
@@ -171,37 +168,36 @@ impl From<&'static str> for Argument {
     }
 }
 
-
 /// Transform functions are the obligatory path from raw clap data into arguments.
-/// To implement Transform<T> for a new T, you need to implement the transform function. 
+/// To implement Transform<T> for a new T, you need to implement the transform function.
 ///   That is, provide a match against all valid transformation fields, to cast into self.
 ///   You should always provide a case to cast into empty. Thankfully, that cast is always the same.
 impl Transform<String> for Argument {
     fn transform(&mut self, value: &String) {
         match self {
-            Argument::Text(x) => {*x = Some(value.to_owned())},
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::Text(x) => *x = Some(value.to_owned()),
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
 impl Transform<PathBuf> for Argument {
     fn transform(&mut self, value: &PathBuf) {
         match self {
-            Argument::PathPattern(x) => {*x = Some(value.to_path_buf())},
-            Argument::Text(x) => {*x = Some(value.display().to_string())},
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::PathPattern(x) => *x = Some(value.to_path_buf()),
+            Argument::Text(x) => *x = Some(value.display().to_string()),
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
 impl Transform<bool> for Argument {
     fn transform(&mut self, value: &bool) {
         match self {
-            Argument::BooleanFlag(x) => {*x = Some(*value)},
-            Argument::Text(x) => {*x = Some(value.to_string())},
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::BooleanFlag(x) => *x = Some(*value),
+            Argument::Text(x) => *x = Some(value.to_string()),
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
@@ -210,15 +206,15 @@ impl Transform<Option<PathBuf>> for Argument {
     fn transform(&mut self, value: &Option<PathBuf>) {
         match self {
             Argument::PathPattern(x) => match value {
-                Some(p) => {*x = Some(p.to_path_buf())},
-                None => {*x = None},
+                Some(p) => *x = Some(p.to_path_buf()),
+                None => *x = None,
             },
             Argument::Text(x) => match value {
-                Some(p) => {*x = Some(p.display().to_string())},
-                None => {*x = None},
+                Some(p) => *x = Some(p.display().to_string()),
+                None => *x = None,
             },
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
@@ -226,30 +222,32 @@ impl Transform<Option<String>> for Argument {
     fn transform(&mut self, value: &Option<String>) {
         match self {
             Argument::Text(x) => match value {
-                Some(p) => {*x = Some(p.to_owned())},
-                None => {*x = None},
+                Some(p) => *x = Some(p.to_owned()),
+                None => *x = None,
             },
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
 impl Transform<Vec<String>> for Argument {
     fn transform(&mut self, value: &Vec<String>) {
         match self {
-            Argument::CollectionText(x) => { *x = Some(value.to_owned()) },
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::CollectionText(x) => *x = Some(value.to_owned()),
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
 impl Transform<Vec<PathBuf>> for Argument {
     fn transform(&mut self, value: &Vec<PathBuf>) {
         match self {
-            Argument::CollectionPathPattern(x) => { *x = Some(value.to_owned()) },
-            Argument::CollectionText(x) => {*x = Some(value.iter().map(|p| p.display().to_string()).collect())},
-            Argument::Empty(x) => {*x = Some(())}
-            _ => panic!("Unspported transformation!")
+            Argument::CollectionPathPattern(x) => *x = Some(value.to_owned()),
+            Argument::CollectionText(x) => {
+                *x = Some(value.iter().map(|p| p.display().to_string()).collect())
+            }
+            Argument::Empty(x) => *x = Some(()),
+            _ => panic!("Unspported transformation!"),
         }
     }
 }
@@ -262,7 +260,7 @@ impl Transform<Formatter> for Vec<String> {
     fn transform(&mut self, value: &Formatter) {
         match value {
             Formatter::Default => return, // No change, this line is the same everywhere.
-            Formatter::Prefix(s) => { *self = self.iter().map(|c| s.to_string() + c).collect() }
+            Formatter::Prefix(s) => *self = self.iter().map(|c| s.to_string() + c).collect(),
             _ => panic!("Unsupported formatter for destination type Vec<String>."),
         }
     }
@@ -296,7 +294,7 @@ impl Generate for Entry {
             Argument::Empty(x) => optional_vectorization(x, defaults),
             Argument::CollectionText(x) => optional_vectorization(x, defaults),
             Argument::CollectionPathPattern(x) => optional_vectorization(x, defaults),
-            Argument::Number(x)  => optional_vectorization(x, defaults),
+            Argument::Number(x) => optional_vectorization(x, defaults),
             _ => panic!("Unsupported type: {:?}", self),
         }
     }
@@ -313,20 +311,24 @@ fn optional_vectorization<T: Vectorize>(v: Option<T>, defaults: &Argument) -> Ve
                 format: (Formatter::Default, Formatter::Default),
                 target_name: Name::Undefined, //Irrelevant
                 target_type: defaults.clone(),
-            }.generate(),
+            }
+            .generate(),
         },
     }
 }
-impl<T> Vectorize for Vec<T> 
-    where T: Vectorize {
-        fn vec(self) -> Vec<String> { //, name: Name, defaults: DefaultValue
-            let mut r: Vec<String> = Vec::new();
-            for c in self {
-                r.extend(c.vec());
-            }
-            return r;
+impl<T> Vectorize for Vec<T>
+where
+    T: Vectorize,
+{
+    fn vec(self) -> Vec<String> {
+        //, name: Name, defaults: DefaultValue
+        let mut r: Vec<String> = Vec::new();
+        for c in self {
+            r.extend(c.vec());
         }
+        return r;
     }
+}
 
 impl Vectorize for String {
     fn vec(self) -> Vec<String> {
@@ -348,7 +350,6 @@ impl Vectorize for () {
         return vec![];
     }
 }
-
 
 impl PartialEq for Name {
     fn eq(&self, other: &Self) -> bool {
@@ -469,9 +470,7 @@ impl PartialEq for Entry {
         return self.target_name == other.target_name;
     }
 }
-impl Eq for Entry {
-    
-}
+impl Eq for Entry {}
 impl PartialOrd for Entry {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         return self.target_name.partial_cmp(&other.target_name);
@@ -483,14 +482,13 @@ impl Ord for Entry {
     }
 }
 
-
 impl TryFrom<&str> for Entry {
     type Error = Error;
     /// Formatter for args, defined as:
     ///   With d the default flag, d ∈ {λ,!,<?*>}
-    ///     Where: 
+    ///     Where:
     ///       - λ designs an empty string,
-    ///       - ! the ! symbol, 
+    ///       - ! the ! symbol,
     ///       - and <?*> any string, surrounded by the symbols < and >.
     ///     Corresponds to:
     ///       - λ => DefaultValue::Skip
@@ -498,9 +496,9 @@ impl TryFrom<&str> for Entry {
     ///       - <?*> => DefaultValue::Default(?*)
     ///
     ///   With n the target name, n ∈ {#?i, -?, --?*}
-    ///     Where: 
-    ///       - #?i designs the # symbol followed by any number, 
-    ///       - -? the - symbol followed by any character, 
+    ///     Where:
+    ///       - #?i designs the # symbol followed by any number,
+    ///       - -? the - symbol followed by any character,
     ///       - and --?* the -- symbol followed by any string.
     ///     Corresponds to:
     ///       - #?i => Name::Blank(?i)
@@ -511,10 +509,10 @@ impl TryFrom<&str> for Entry {
     ///     Corresponds to:
     ///      - str => Option<String>
     ///      - path => Option<PathBuff>
-    /// 
+    ///
     ///   With s = {_} where _ is any string.
     ///     Corresponds to the source item, as read by clap.
-    /// 
+    ///
     /// A format as: ndst
     ///   
     /// Examples: #1<->{path}[path]
@@ -524,14 +522,14 @@ impl TryFrom<&str> for Entry {
         let r = Regex::new(r"((?P<n1>#\d{1,3})|(?P<n2>-\pL)|(?P<n3>--\pL+))((?P<d1>!)|(?P<d2><[\pL-]*>)|(?P<d3>))(?P<s>\{\pL+\})((?P<t1>\[\pL+\])|(?P<t2>))").unwrap();
         let _c = r.captures(value);
 
-
-
-        return Err(Error{});
+        return Err(Error {});
     }
 }
 
 impl<U> Transformable<U> for Entry
-where Argument: Transform<U> {
+where
+    Argument: Transform<U>,
+{
     fn fill(&mut self, with: &U) {
         self.target_name.cleanup();
         self.target_type.transform(with);
@@ -581,8 +579,7 @@ impl Entry {
     }
 }
 
-
-impl Expand for BTreeMap<Name,Vec<Entry>> {
+impl Expand for BTreeMap<Name, Vec<Entry>> {
     type Key = Name;
     type Item = Entry;
     fn expand(&mut self, key: Self::Key, value: Self::Item) {
